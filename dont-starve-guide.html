@@ -1,0 +1,1296 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>zyx的小站 - 饥荒百科全书</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0d0d0d;--card:#1a1a1a;--card2:#222;--hover:#2a2a2a;--gold:#d4a017;--gold-l:#f0c040;--red:#c0392b;--green:#27ae60;--blue:#2980b9;--purple:#8e44ad;--text:#e0d6c2;--dim:#8a8070;--bright:#f5f0e0;--border:#333}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI','Microsoft YaHei',sans-serif;line-height:1.7;overflow-x:hidden}
+a{color:var(--gold)}
+.header{background:linear-gradient(135deg,#0d0d0d,#1a1000,#0d0d0d);border-bottom:2px solid var(--gold);padding:22px 0;text-align:center}
+.header h1{font-size:2.2em;color:var(--gold);text-shadow:0 0 30px rgba(212,160,23,0.3);letter-spacing:4px}
+.header .sub{color:var(--dim);font-size:.92em;margin-top:4px;letter-spacing:2px}
+.search-w{max-width:480px;margin:14px auto 0;position:relative}
+.search-w input{width:100%;padding:10px 16px;border-radius:25px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:.93em;outline:none}
+.search-w input:focus{border-color:var(--gold)}
+.search-panel{position:absolute;top:100%;left:0;right:0;margin-top:6px;background:var(--card);border:1px solid var(--border);border-radius:12px;max-height:420px;overflow-y:auto;z-index:999;display:none;box-shadow:0 12px 40px rgba(0,0,0,.6)}
+.search-panel::-webkit-scrollbar{width:6px}.search-panel::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+.sr-header{padding:10px 16px;font-size:.82em;color:var(--gold);border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--card);z-index:1}
+.sr-item{padding:10px 16px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.04);transition:background .15s}
+.sr-item:hover{background:rgba(212,175,55,.1)}
+.sr-item:last-child{border-bottom:none}
+.sr-meta{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.sr-tab{font-size:.72em;background:var(--gold);color:#1a1a2e;padding:2px 8px;border-radius:10px;font-weight:600;white-space:nowrap}
+.sr-title{font-size:.88em;font-weight:600;color:var(--text)}
+.sr-snippet{font-size:.78em;color:var(--dim);line-height:1.5;margin-top:2px}
+.sr-snippet mark{background:rgba(212,175,55,.3);color:var(--gold);border-radius:2px;padding:0 2px}
+.sr-empty{padding:20px 16px;text-align:center;color:var(--dim);font-size:.88em}
+.nav{background:var(--card);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;overflow-x:auto;white-space:nowrap}
+.nav-i{display:flex;max-width:1200px;margin:0 auto}
+.nb{padding:13px 18px;background:none;border:none;color:var(--dim);cursor:pointer;font-size:.88em;border-bottom:3px solid transparent;white-space:nowrap;transition:.3s}
+.nb:hover{color:var(--gold);background:rgba(212,160,23,.04)}
+.nb.on{color:var(--gold);border-bottom-color:var(--gold);background:rgba(212,160,23,.06)}
+.main{max-width:1200px;margin:0 auto;padding:24px 18px}
+.tc{display:none;animation:fi .4s}
+.tc.on{display:block}
+@keyframes fi{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;margin-bottom:14px;transition:.3s}
+.card:hover{border-color:rgba(212,160,23,.3)}
+.card h3{color:var(--gold);margin-bottom:8px;font-size:1.1em}
+.card p,.card li{font-size:.91em}
+.card ul{padding-left:16px}
+.card li{margin-bottom:4px}
+.st{font-size:1.4em;color:var(--gold);margin:28px 0 16px;padding-bottom:10px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.g2{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:14px}
+.g3{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.g4{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.cc{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;transition:.3s;cursor:pointer}
+.cc:hover{transform:translateY(-3px);border-color:var(--gold);box-shadow:0 8px 30px rgba(212,160,23,.12)}
+.cc .ci{font-size:2.4em;margin-bottom:6px}
+.cc .cn{font-size:1.05em;color:var(--gold);font-weight:700}
+.cc .ct{color:var(--dim);font-size:.8em;margin-bottom:6px}
+.cc .cs{display:flex;gap:10px;margin:8px 0;font-size:.8em}
+.sh{color:#e74c3c}.sn{color:#e67e22}.ss{color:#9b59b6}
+.cc .cd{font-size:.84em;color:var(--dim)}
+.cd2{display:none;background:var(--card2);border-radius:8px;padding:12px;margin-top:10px;font-size:.86em;line-height:1.6}
+.cd2.show{display:block;animation:fi .3s}
+.ds{display:inline-flex;gap:2px}
+.ds .s{color:var(--border)}.ds .s.on{color:var(--gold)}
+.it{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px;display:flex;gap:10px;align-items:flex-start;transition:.3s}
+.it:hover{border-color:rgba(212,160,23,.3)}
+.it .ii{font-size:1.8em;flex-shrink:0;width:40px;text-align:center}
+.it .ii2 h4{color:var(--gold);font-size:.92em;margin-bottom:3px}
+.it .ii2 p{font-size:.82em;color:var(--dim)}
+.tag{display:inline-block;padding:2px 10px;border-radius:12px;font-size:.73em;margin:2px}
+.tag-e{background:rgba(39,174,96,.12);color:#27ae60;border:1px solid rgba(39,174,96,.3)}
+.tag-m{background:rgba(212,160,23,.1);color:var(--gold);border:1px solid rgba(212,160,23,.3)}
+.tag-h{background:rgba(192,57,43,.1);color:#e74c3c;border:1px solid rgba(192,57,43,.3)}
+.tag-i{background:rgba(41,128,185,.1);color:#3498db;border:1px solid rgba(41,128,185,.3)}
+.tb{width:100%;border-collapse:collapse;margin:10px 0;font-size:.86em}
+.tb th{background:var(--card2);color:var(--gold);padding:9px 11px;text-align:left;border-bottom:2px solid var(--border)}
+.tb td{padding:8px 11px;border-bottom:1px solid var(--border)}
+.tb tr:hover td{background:rgba(212,160,23,.02)}
+.tip{background:rgba(212,160,23,.05);border-left:4px solid var(--gold);padding:12px 16px;border-radius:0 8px 8px 0;margin:10px 0;font-size:.88em}
+.tip.w{border-color:#e74c3c;background:rgba(231,76,60,.05)}
+.tip.i{border-color:#3498db;background:rgba(52,152,219,.05)}
+.hero{background:linear-gradient(135deg,rgba(13,13,13,.95),rgba(26,16,0,.9));padding:45px 28px;text-align:center;border-radius:16px;margin-bottom:28px;border:1px solid var(--border)}
+.hero h2{font-size:1.9em;color:var(--gold);margin-bottom:10px}
+.hero p{color:var(--dim);max-width:680px;margin:0 auto;font-size:.96em}
+.qs{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin:22px 0}
+.q{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 22px;text-align:center;min-width:120px}
+.q .qn{font-size:1.7em;color:var(--gold);font-weight:900}
+.q .ql{font-size:.76em;color:var(--dim);margin-top:3px}
+.sc{border-radius:12px;padding:20px;margin-bottom:14px;border:1px solid var(--border)}
+.sa{background:linear-gradient(135deg,#1a1500,#1a1a1a);border-color:#d4a017}
+.sw{background:linear-gradient(135deg,#0a1520,#1a1a1a);border-color:#3498db}
+.sp{background:linear-gradient(135deg,#0a1a0a,#1a1a1a);border-color:#27ae60}
+.sm{background:linear-gradient(135deg,#1a0a00,#1a1a1a);border-color:#e74c3c}
+.sc h3{font-size:1.2em;margin-bottom:8px}
+.rc{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(51,51,51,.5);font-size:.88em}
+.rc .ri{font-size:1.4em}.rc .rn{color:var(--gold);font-weight:600;min-width:90px}.rc .ri2{color:var(--dim);flex:1;font-size:.82em}.rc .rs{display:flex;gap:8px;font-size:.78em;flex-shrink:0}
+.btt{position:fixed;bottom:28px;right:28px;width:42px;height:42px;border-radius:50%;background:var(--gold);color:var(--bg);border:none;cursor:pointer;font-size:1.1em;display:none;z-index:99}
+.btt:hover{transform:scale(1.1)}.btt.show{display:flex;align-items:center;justify-content:center}
+@media(max-width:768px){.header h1{font-size:1.4em}.nb{padding:11px 12px;font-size:.8em}.main{padding:15px 12px}.g2,.g3,.g4{grid-template-columns:1fr}.hero{padding:28px 14px}.hero h2{font-size:1.3em}.st{font-size:1.15em}.tb,.spawn-table{display:block;width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}.card{padding:14px}.search-panel{max-height:60vh;border-radius:8px}.sr-snippet{font-size:.75em}}
+footer{text-align:center;padding:28px;color:var(--dim);font-size:.78em;border-top:1px solid var(--border);margin-top:38px}
+</style>
+</head>
+<body>
+<div class="header">
+<div style="font-size:2.8em;margin-bottom:6px">💀</div>
+<h1>zyx的小站</h1>
+<div class="sub">饥荒百科全书 · DON'T STARVE · 全方位生存攻略指南</div>
+<div class="search-w"><input type="text" id="gs" placeholder="🔍 搜索角色、物品、怪物、食谱..." oninput="_debounceSearch(this.value)" onkeydown="_searchKey(event)" autocomplete="off"><div class="search-panel" id="searchPanel"></div></div>
+</div>
+<nav class="nav"><div class="nav-i">
+<button class="nb on" onclick="sw('home',this)">🏠 首页</button>
+<button class="nb" onclick="sw('chars',this)">🧑‍🌾 角色全解</button>
+<button class="nb" onclick="sw('surv',this)">🌿 生存指南</button>
+<button class="nb" onclick="sw('food',this)">🍖 食物系统</button>
+<button class="nb" onclick="sw('mobs',this)">👹 怪物图鉴</button>
+<button class="nb" onclick="sw('seasons',this)">🌦️ 四季攻略</button>
+<button class="nb" onclick="sw('craft',this)">⚒️ 物品合成</button>
+<button class="nb" onclick="sw('world',this)">🗺️ 探索百科</button>
+<button class="nb" onclick="sw('console',this)">⌨️ 控制台</button>
+</div></nav>
+<div class="main">
+
+<!-- HOME -->
+<div class="tc on" id="t-home">
+<div class="hero">
+<h2>🪵 欢迎来到永恒领域</h2>
+<p>《饥荒》是 Klei Entertainment 开发的生存冒险游戏。你将被传送到神秘的荒野世界，必须利用一切资源活下去。这份攻略将帮助你从新手成长为生存大师。</p>
+<div style="margin-top:12px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+<span class="tag tag-i">📡 联机版: From Beyond - Cursed Confrontation Part 1</span>
+<span class="tag tag-e">Version 2026 · Build 736959 · 2026.6.11</span>
+<span class="tag tag-m">🎂 DST 10周年 · Klei 20周年</span>
+</div>
+</div>
+<div class="qs">
+<div class="q"><div class="qn">18</div><div class="ql">可选角色</div></div>
+<div class="q"><div class="qn">4</div><div class="ql">季节循环</div></div>
+<div class="q"><div class="qn">40+</div><div class="ql">怪物种类</div></div>
+<div class="q"><div class="qn">15</div><div class="ql">Boss 种类</div></div>
+<div class="q"><div class="qn">200+</div><div class="ql">可制作物品</div></div>
+<div class="q"><div class="qn">60+</div><div class="ql">食谱配方</div></div>
+</div>
+<h2 class="st">⚡ 新手必知 10 条</h2>
+<div class="g2">
+<div class="card"><h3>🌅 1. 白天收集，黄昏建造</h3><p>白天（8格）采集草、树枝、燧石、浆果。黄昏（5格）生火建造。<strong>夜晚必须有光源</strong>，否则被查理攻击致死。</p></div>
+<div class="card"><h3>🔥 2. 第一天必做</h3><p>捡燧石×2+树枝×2→做斧头和鹤嘴锄→砍树挖矿→傍晚前生火。食物优先捡浆果和胡萝卜。</p></div>
+<div class="card"><h3>🍖 3. 饥饿是头号敌人</h3><p>饥饿值持续下降，降到0后扣血。保持饱食度>50%。前期靠浆果胡萝卜过渡，尽快做出<strong>肉丸</strong>。</p></div>
+<div class="card"><h3>🏕️ 4. 尽快建基地</h3><p>第5-8天找基地位置（牛群草原/猪村旁）。建科学机器→炼金引擎→锅→冰箱。</p></div>
+<div class="card"><h3>🧠 5. 理智不能忽视</h3><p>理智低于30出现暗影怪物。前期采花(+5理智/朵)，穿高理智回复装备，做太妃糖恢复。</p></div>
+<div class="card"><h3>❄️ 6. 第一个冬天最关键</h3><p>冬天第21天来临。提前准备：暖石、牛帽、大量食物储备（至少40个肉丸）。</p></div>
+<div class="card"><h3>⚔️ 7. 战斗走位是核心</h3><p>打1-2下→走开躲避→重复。穿木甲+橄榄球头盔可吸收80%+80%伤害。</p></div>
+<div class="card"><h3>📦 8. 资源管理</h3><p>冰箱延长保质期。晒肉架把怪物肉变肉干(+理智)。多种草和树枝，移植浆果丛。</p></div>
+<div class="card"><h3>🐕 9. 猎犬来袭</h3><p>每隔几天猎犬袭击。前期硬打，中后期用陷阱阵或引到牛群旁。</p></div>
+<div class="card"><h3>💡 10. 探索很重要</h3><p>前10天沿地图边缘跑一圈，标记猪王、格罗姆、齿轮怪、虫洞等重要资源点。</p></div>
+</div>
+<h2 class="st">🗺️ 快速导航</h2>
+<div class="g3">
+<div class="card" style="cursor:pointer;text-align:center" onclick="sw('chars',document.querySelectorAll('.nb')[1])"><div style="font-size:2.4em;margin-bottom:6px">🧑‍🌾</div><h3>角色全解</h3><p>18位角色详细数据与攻略</p></div>
+<div class="card" style="cursor:pointer;text-align:center" onclick="sw('food',document.querySelectorAll('.nb')[3])"><div style="font-size:2.4em;margin-bottom:6px">🍖</div><h3>食物系统</h3><p>60+锅配方与食材属性</p></div>
+<div class="card" style="cursor:pointer;text-align:center" onclick="sw('mobs',document.querySelectorAll('.nb')[4])"><div style="font-size:2.4em;margin-bottom:6px">👹</div><h3>怪物图鉴</h3><p>所有怪物数据与战斗策略</p></div>
+</div>
+</div>
+
+<!-- CHARACTERS -->
+<div class="tc" id="t-chars">
+<h2 class="st">🧑‍🌾 角色全解 <span style="font-size:.5em;color:var(--dim);font-weight:400">— 点击展开详情</span></h2>
+<div class="g3" id="cg"></div>
+</div>
+
+<!-- SURVIVAL -->
+<div class="tc" id="t-surv">
+<h2 class="st">🌿 新手生存指南</h2>
+<div class="tip i">💡 本指南基于 <strong>Don't Starve Together 联机版</strong>（From Beyond 系列，Version 2026）。联机版与单机版有较大差异：有技能树系统、裂缝循环、平面伤害、新Boss等。</div>
+
+<h2 class="st">🆕 From Beyond 新机制（必读）</h2>
+<div class="card">
+<h3>🌳 技能树系统 (Skill Tree)</h3>
+<p>每个角色都有独立的技能树，通过<strong>洞察点(Insight)</strong>解锁强化能力。</p>
+<ul>
+<li><strong>获取方式：</strong>在游戏中存活天数累积获得洞察点，存活 160 天即可拿满单个角色上限的 15 点</li>
+<li>洞察点<strong>跨存档永久保留</strong>，不会因死亡或换档丢失</li>
+<li>在角色选择界面分配技能点</li>
+</ul>
+<div class="tip" style="margin-top:8px">💡 <strong>已开放技能树的角色：</strong>Wilson、Willow、Wolfgang、Wendy、WX-78（2024.4更新）、Woodie、Wigfrid、Wormwood、Wortox、Walter 等。Webber 目前尚未开放技能树。</div>
+</div>
+
+<div class="card">
+<h3>🌀 裂缝循环 (Rift Cycle)</h3>
+<p>世界中会周期性出现<strong>月光裂缝</strong>和<strong>暗影裂缝</strong>，带来新的威胁和资源：</p>
+<ul>
+<li><strong>月光裂缝 (Lunar Rift)：</strong>出现月光生物，掉落月光材料</li>
+<li><strong>暗影裂缝 (Shadow Rift)：</strong>出现暗影强化怪物</li>
+<li>裂缝开启后会改变周围环境，带来新Boss</li>
+<li>需要推进主线剧情（击败天体冠军/织影者）才能触发</li>
+</ul>
+</div>
+
+<div class="card">
+<h3>⚔️ 平面伤害 (Planar Damage)</h3>
+<p>From Beyond 引入的全新伤害类型，<strong>无视传统护甲</strong>：</p>
+<ul>
+<li>部分新怪物造成平面伤害，普通木甲/橄榄球头盔<strong>无法完全吸收</strong></li>
+<li>需要<strong>平面防御 (Planar Defence)</strong> 装备来抵抗</li>
+<li>月光系列和暗影系列装备提供平面防御</li>
+<li>不要以为穿了甲就无敌，新区域的怪物可能直接扣血</li>
+</ul>
+</div>
+
+<div class="card">
+<h3>🏛️ 圣殿 (Sanctum)</h3>
+<p>最新更新 Cursed Confrontation 新增的地下城区域：</p>
+<ul>
+<li>新Boss和独特掉落物</li>
+<li>新增<strong>路标罗盘 (Waymark Compass)</strong> 帮助导航</li>
+<li>可用绳索连接圣殿深渊和远古档案室</li>
+<li>新增物品：热腺体、热力工具、煤炭陷阱、热膏药</li>
+</ul>
+</div>
+<div class="card"><h3>📅 第1天 — 黄金24小时</h3><ul>
+<li><strong>立即：</strong>采集燧石×2、树枝×2，制作斧头和鹤嘴锄</li>
+<li><strong>白天：</strong>砍树木头×12+，挖矿找金块</li>
+<li><strong>采集：</strong>浆果、胡萝卜、花(+5理智)、草、树枝</li>
+<li><strong>黄昏：</strong>放置营火(草×2+木头×2)</li>
+<li><strong>目标：</strong>木头×40、石头×20、金块×2、草×20、树枝×20</li>
+</ul></div>
+<div class="card"><h3>📅 第2-5天 — 探索收集期</h3><ul>
+<li>沿地图边缘探索，标记重要地点</li>
+<li>重点找：牛群(粪便+安全区)、猪王(金块交易)、虫洞</li>
+<li>蜘蛛巢用陷阱打：放陷阱→踩巢引蜘蛛→陷阱抓住</li>
+<li>打蝴蝶获翅膀(回血)和黄油(稀有，做太妃糖)</li>
+<li>收集齿轮：找发条骑士/主教，打3走1</li>
+</ul></div>
+<div class="card"><h3>📅 第6-10天 — 建造基地</h3>
+<div class="tip i">🏔️ 理想位置：靠近牛群草原 + 虫洞交汇 + 附近有猪村</div>
+<ul>
+<li><strong>建造顺序：</strong>科学机器→炼金引擎→锅×2→冰箱→晒肉架×4</li>
+<li>移植浆果丛×10、草×20、树枝×20(需铲子+便便施肥)</li>
+<li>建避雷针(防雷击火灾)、做背包扩展容量</li>
+</ul></div>
+<div class="card"><h3>📅 第11-20天 — 备战冬天</h3><ul>
+<li>做<strong>冬帽</strong>（牛毛×4 + 蜘蛛丝×4）或 <strong>牛帽</strong>（牛角×1 + 牛毛×8）</li>
+<li>做<strong>暖石</strong>(石头×10+鹤嘴锄×1+草×3) — 必备!</li>
+<li>储备肉丸×30+(怪物肉×1+浆果×3)、肉干×20+</li>
+<li>打海象爸爸获<strong>行走手杖</strong>和<strong>贝雷帽</strong></li>
+<li>准备木甲×3+橄榄球头盔×2</li>
+</ul></div>
+
+<h2 class="st">🏗️ 基地布局指南</h2>
+<div class="card"><h3>🏠 功能分区</h3><ul>
+<li><strong>核心区(火坑周围)：</strong>冰箱×2-4、锅×2-4、箱子、帐篷</li>
+<li><strong>生产区：</strong>晒肉架群(8-12个)、农场、蜂箱×4-6</li>
+<li><strong>功能区：</strong>科学机器、炼金引擎、灵子分解器、暗影操控器</li>
+<li><strong>防御区：</strong>围墙、牙齿陷阱阵</li>
+<li><strong>种植区：</strong>移植的浆果丛、草丛、树枝丛、花(吸引蝴蝶)</li>
+</ul></div>
+<div class="card"><h3>⚡ 建造优先级</h3>
+<table class="tb"><tr><th>优先</th><th>建筑</th><th>材料</th><th>作用</th></tr>
+<tr><td>⭐⭐⭐</td><td>科学机器</td><td>金×1 石×4 木×4</td><td>一级科技</td></tr>
+<tr><td>⭐⭐⭐</td><td>炼金引擎</td><td>木板×4 石砖×2 金×6</td><td>二级科技</td></tr>
+<tr><td>⭐⭐⭐</td><td>锅</td><td>木炭×6 树枝×6 石砖×3</td><td>烹饪高级食物</td></tr>
+<tr><td>⭐⭐⭐</td><td>冰箱</td><td>金×1 齿轮×1 石砖×2</td><td>食物保鲜</td></tr>
+<tr><td>⭐⭐</td><td>避雷针</td><td>金×4 石砖×1</td><td>防雷击</td></tr>
+<tr><td>⭐⭐</td><td>晒肉架</td><td>木炭×3 绳子×3 树枝×2</td><td>制作肉干</td></tr>
+<tr><td>⭐⭐</td><td>帐篷</td><td>丝线×6 树枝×4 绳子×3</td><td>睡觉恢复</td></tr>
+<tr><td>⭐</td><td>灵子分解器</td><td>兔子×4 木板×4 草×10</td><td>魔法科技</td></tr>
+</table></div>
+
+<h2 class="st">🌡️ 温度系统</h2>
+<div class="card">
+<h3>❄️ 冻伤机制</h3>
+<p>体感温度低于 0° 时持续掉血。<strong>保暖值</strong>越高越不容易冻。</p>
+<ul>
+<li><strong>暖石：</strong>放火旁/背包中加热，带身上保暖。5个温度阶段（灰→黄→橙→红→白热）</li>
+<li><strong>保暖装备：</strong>牛帽(240) > 冬帽(120) > 暖石(变数) > 耳罩(60)</li>
+<li><strong>热源：</strong>火坑、矮星、暖石、站在龙蝇火堆旁</li>
+<li>冬天出门必带暖石 + 牛帽，暖石凉了及时回基地加热</li>
+</ul>
+</div>
+<div class="card">
+<h3>🔥 过热机制</h3>
+<p>体感温度过高持续掉血。<strong>隔热值</strong>越高越不容易热。</p>
+<ul>
+<li><strong>降温装备：</strong>冰切斯特、清凉夏装、花衬衫、时尚西瓜帽</li>
+<li><strong>冷源：</strong>冷暖石(放冰箱)、冰火坑、仙人掌肉(烤熟)</li>
+<li><strong>雪球发射器：</strong>防止基地建筑自燃，必须建！</li>
+<li>夏天随身带冷暖石，定期回冰箱冷却</li>
+</ul>
+</div>
+
+<h2 class="st">🧠 理智系统详解</h2>
+<div class="card">
+<h3>📉 理智下降来源</h3>
+<table class="tb"><tr><th>来源</th><th>影响</th></tr>
+<tr><td>夜晚/黑暗</td><td>-50/分钟（站在完全黑暗中）</td></tr>
+<tr><td>怪物 proximity</td><td>-40/分钟（靠近暗影怪）</td></tr>
+<tr><td>下雨</td><td>-3.3/分钟（中雨）</td></tr>
+<tr><td>吃怪物肉</td><td>-15/个</td></tr>
+<tr><td>吃生肉</td><td>-5/个</td></tr>
+<tr><td>挖坟</td><td>-10/次</td></tr>
+</table>
+</div>
+<div class="card">
+<h3>📈 理智恢复来源</h3>
+<table class="tb"><tr><th>来源</th><th>影响</th></tr>
+<tr><td>采花</td><td>+5/朵</td></tr>
+<tr><td>穿高理智装备</td><td>+3.3~6.7/分钟（贝雷帽、花环等）</td></tr>
+<tr><td>吃太妃糖</td><td>+15/个</td></tr>
+<tr><td>吃南瓜饼</td><td>+15/个</td></tr>
+<tr><td>靠近猪人</td><td>+25/分钟</td></tr>
+<tr><td>帐篷睡觉</td><td>+50/次</td></tr>
+<tr><td>烤仙人掌(夏)</td><td>+15/个</td></tr>
+</table>
+<div class="tip w" style="margin-top:8px">⚠️ <strong>理智低于 30%</strong>（约60点）时出现暗影爬行者，低于 15% 出现暗影巨手。保持理智 >80 是安全线。</div>
+</div>
+
+<h2 class="st">⚔️ 战斗系统</h2>
+<div class="card">
+<h3>🎯 走位(Kiting)核心技巧</h3>
+<p>走位是饥荒战斗的核心。原理：怪物攻击有固定间隔，利用间隔打N下后闪避。</p>
+<table class="tb"><tr><th>怪物</th><th>可打次数</th><th>攻击间隔</th><th>技巧</th></tr>
+<tr><td>蜘蛛</td><td>1-2下</td><td>~3秒</td><td>最基础，打1走1</td></tr>
+<tr><td>猎犬</td><td>1下</td><td>~2秒</td><td>等它咬完再打</td></tr>
+<tr><td>触手</td><td>2下</td><td>~3秒</td><td>穿甲硬抗也可以</td></tr>
+<tr><td>独眼巨鹿</td><td>2下</td><td>~3秒</td><td>范围冰冻攻击要躲 | HP 4000</td></tr>
+<tr><td>熊大</td><td>2-3下</td><td>~3.5秒</td><td>冲撞后有硬直 | HP 6000</td></tr>
+<tr><td>蜻蜓龙</td><td>1-2下</td><td>~4秒</td><td>会召唤岩浆虫 | HP 27500</td></tr>
+</table>
+</div>
+<div class="card">
+<h3>🛡️ 护甲叠加规则</h3>
+<ul>
+<li><strong>身体护甲</strong>和<strong>头盔</strong>可以同时穿戴，各自独立计算吸收</li>
+<li>木甲吸收 80%，橄榄球头盔吸收 80%</li>
+<li>受到 100 点伤害时：木甲吸收 80 → 剩余 20 → 头盔吸收 16 → 实际扣血 4</li>
+<li><strong>实际减伤约 96%</strong>！双甲是生存基础</li>
+<li>暗影甲(95%)+橄榄球头盔(80%) = 实际减伤 99%</li>
+</ul>
+</div>
+
+<h2 class="st">💀 死亡与复活</h2>
+<div class="card">
+<h3>⚰️ 死亡惩罚</h3>
+<ul>
+<li><strong>单机版：</strong>失去存档（除非有复活手段）</li>
+<li><strong>联机版：</strong>变成鬼魂，可以作祟(Haunt)物品，等待队友复活</li>
+<li>死亡掉落所有物品在死亡地点</li>
+</ul>
+</div>
+<div class="card">
+<h3>🔮 复活方法</h3>
+<table class="tb"><tr><th>方法</th><th>材料</th><th>说明</th></tr>
+<tr><td>🪦 触碰石</td><td>地图自带</td><td>世界生成，一次性。复活后在石碑处</td></tr>
+<tr><td>🪆 肉像</td><td>胡须×4 + 木板×4 + 肉×4</td><td>威尔逊专属胡须做。复活在肉像处，扣30HP上限</td></tr>
+<tr><td>❤️ 生命护符</td><td>金×3 + 红宝石×1 + 噩梦燃料×2</td><td>穿戴时自动复活（需在物品栏），+50HP</td></tr>
+<tr><td>💀 作祟复活</td><td>联机版</td><td>鬼魂作祟触碰石/肉像/告密的心可以复活</td></tr>
+<tr><td>🫀 告密的心</td><td>蜘蛛丝×4 + 噩梦燃料×2 + 草×3</td><td>联机版，队友用这个复活你，扣30HP上限</td></tr>
+</table>
+</div>
+
+<h2 class="st">🌾 农场系统</h2>
+<div class="card">
+<h3>🌱 DST 新农场机制</h3>
+<p>联机版完全重做了农场系统，不再是简单的种种子：</p>
+<ul>
+<li><strong>耕地：</strong>用园艺锄翻开土地，播种种子</li>
+<li><strong>三种营养：</strong>催肥剂(粪便)、堆肥(腐烂物)、化肥(鸟粪) — 不同作物需要不同营养</li>
+<li><strong>季节作物：</strong>每种作物有适合的季节，错季生长慢或枯萎</li>
+<li><strong>浇水：</strong>需要定期浇水（下雨或手动浇灌）</li>
+<li><strong>过度种植：</strong>同种作物太多会互相抢营养，产量下降</li>
+<li>用<strong>种子</strong>种出随机作物，或用<strong>特定种子</strong>(鸟笼喂鸟获得)</li>
+</ul>
+</div>
+
+<h2 class="st">🐂 驯牛系统</h2>
+<div class="card">
+<h3>🦬 驯化流程</h3>
+<ul>
+<li><strong>找牛：</strong>草原上的野牛群，选一头开始喂养</li>
+<li><strong>喂食：</strong>每天喂草/树枝/蔬菜增加驯化度</li>
+<li><strong>刷毛：</strong>用刷子刷牛(+40驯化度/天)</li>
+<li><strong>骑乘：</strong>做鞍放上去骑(需要驯化度>0)</li>
+<li><strong>服从度：</strong>低于50%鞍会掉下来。喂食和骑乘提高服从</li>
+</ul>
+<div class="tip" style="margin-top:8px">💡 <strong>牛性格(10天后定型)：</strong>战斗牛(攻击力高)、骑乘牛(移速快)、胖牛(回理智)、普通牛</div>
+</div>
+</div>
+
+<!-- FOOD -->
+<div class="tc" id="t-food">
+<h2 class="st">🍖 食物系统</h2>
+<div class="tip">🍲 <strong>锅(Crock Pot)</strong>放入4种食材，等40秒出高级料理。了解配方是生存关键。</div>
+<h2 class="st">⭐ 必做食谱 TOP 10</h2>
+<div id="tr"></div>
+<h2 class="st">📖 全部食谱</h2>
+<div id="ar"></div>
+<h2 class="st">🥬 基础食材属性</h2>
+<table class="tb"><tr><th>食材</th><th>类型</th><th>饥饿</th><th>生命</th><th>理智</th><th>保鲜</th></tr>
+<tr><td>🥩 怪物肉</td><td>肉1.0</td><td>+18.75</td><td>-20</td><td>-15</td><td>10天</td></tr>
+<tr><td>🥩 大肉</td><td>肉1.0</td><td>+25</td><td>-3</td><td>0</td><td>10天</td></tr>
+<tr><td>🍗 小肉</td><td>肉0.5</td><td>+12.5</td><td>-1</td><td>0</td><td>10天</td></tr>
+<tr><td>🐟 鱼</td><td>肉0.5+鱼1.0</td><td>+12.5</td><td>+1</td><td>0</td><td>10天</td></tr>
+<tr><td>🫐 浆果</td><td>水果0.5</td><td>+9.4</td><td>0</td><td>0</td><td>6天</td></tr>
+<tr><td>🥕 胡萝卜</td><td>蔬菜1.0</td><td>+12.5</td><td>+1</td><td>0</td><td>10天</td></tr>
+<tr><td>🍄 蘑菇</td><td>蔬菜0.5</td><td>+12.5</td><td>0</td><td>0</td><td>10天</td></tr>
+<tr><td>🥚 鸟蛋</td><td>蛋1.0</td><td>+9.4</td><td>0</td><td>0</td><td>10天</td></tr>
+<tr><td>🧈 黄油</td><td>乳制品1.0</td><td>+25</td><td>+3</td><td>0</td><td>10天</td></tr>
+<tr><td>🍯 蜂蜜</td><td>甜味1.0</td><td>+9.4</td><td>+3</td><td>0</td><td>40天</td></tr>
+<tr><td>❄️ 冰块</td><td>冰1.0</td><td>+2.5</td><td>0</td><td>0</td><td>∞(冬)</td></tr>
+</table>
+</div>
+
+<!-- MOBS -->
+<div class="tc" id="t-mobs">
+<h2 class="st">👹 怪物图鉴</h2>
+<div class="tip">⚔️ <strong>战斗基础：</strong>穿木甲(吸收80%)+橄榄球头盔(吸收80%)。走位：打N下→躲→重复。</div>
+<h2 class="st">👑 Boss 级怪物</h2>
+<div class="g2" id="bg"></div>
+<h2 class="st">🕷️ 常见怪物</h2>
+<div class="g2" id="mg"></div>
+</div>
+
+<!-- SEASONS -->
+<div class="tc" id="t-seasons">
+<h2 class="st">🌦️ 四季攻略</h2>
+
+<div class="sc sa">
+<h3>🍂 秋天 (Autumn) — 第1-20天</h3>
+<p><span class="tag tag-e">简单</span> <span class="tag tag-i">温度适宜</span></p>
+<p style="margin-top:8px"><strong>最安全的季节</strong>，无极端天气。新手最佳开局。</p>
+<ul style="margin-top:6px">
+<li>🌡️ 温度适宜，无冻伤/过热风险</li>
+<li>🌧️ 偶尔下雨，带雨伞即可</li>
+<li>🐿️ 桦树林出现坚果可收集</li>
+</ul>
+<div class="tip" style="margin-top:8px"><strong>📋 秋季任务：</strong>✅探索地图 ✅建好基地 ✅移植植物 ✅积累食物 ✅准备冬季装备 ✅打齿轮做冰箱</div>
+</div>
+
+<div class="sc sw">
+<h3>❄️ 冬天 (Winter) — 第21-35天</h3>
+<p><span class="tag tag-m">中等</span> <span class="tag tag-i">极低温</span></p>
+<p style="margin-top:8px">持续冻伤，食物来源减少。第一个冬天是新手最大挑战。</p>
+<ul style="margin-top:6px">
+<li>🌡️ <strong>冻伤：</strong>体感<0°持续掉血。暖石+牛帽防冻</li>
+<li>❄️ 冰矿出现可采冰块</li>
+<li>🐾 冰猎犬出现(蓝色，击杀留冰冻)</li>
+<li>🐧 企鹅出现(中立，产蛋)</li>
+<li>🦌 <strong>Boss: 独眼巨鹿</strong> — 第30天前后，HP 4000，攻击力 75</li>
+<li>🎯 海象爸爸营地出现，击杀获行走手杖/贝雷帽</li>
+</ul>
+<div class="tip w" style="margin-top:8px"><strong>⚠️ 独眼巨鹿：</strong>HP4000 攻75 范围冰冻。策略：引到触手群/蜘蛛巢互打；或打2下走开(攻击间隔~3秒)。掉落巨眼球(做眼球伞)+8大肉。</div>
+</div>
+
+<div class="sc sp">
+<h3>🌱 春天 (Spring) — 第36-55天</h3>
+<p><span class="tag tag-m">中等</span> <span class="tag tag-i">温暖潮湿</span></p>
+<p style="margin-top:8px">大量降雨，青蛙雨，作物疯长。蜜蜂变敌对。</p>
+<ul style="margin-top:6px">
+<li>🌧️ 频繁降雨→潮湿→理智下降。需雨伞/眼球伞+防水衣物</li>
+<li>🐸 <strong>青蛙雨：</strong>随机降大量青蛙！远离基地，或用陷阱收集</li>
+<li>🐝 所有蜜蜂变红蜂(敌对)，不要惹蜂箱</li>
+<li>🌱 作物快速生长，种植好季节</li>
+<li>🦌 <strong>Boss: 驼鹿</strong> — HP 3000，攻75，产蛋孵化小鸭</li>
+<li>⚡ 雷暴天气，需避雷针</li>
+</ul>
+</div>
+
+<div class="sc sm">
+<h3>🔥 夏天 (Summer) — 第56-70天</h3>
+<p><span class="tag tag-h">困难</span> <span class="tag tag-i">极高温度</span></p>
+<p style="margin-top:8px">过热掉血，物品自燃，野火蔓延。最危险季节。</p>
+<ul style="margin-top:6px">
+<li>🌡️ <strong>过热：</strong>体感过高持续掉血。冷暖石+冰切斯特+降温衣物</li>
+<li>🔥 <strong>自燃：</strong>可燃物可能自燃！需<strong>雪球发射器</strong>保护基地</li>
+<li>🌵 仙人掌开花(+15理智，夏季限定)</li>
+<li>🐜 蚁狮(沙漠)，需喂石头避免地震</li>
+<li>🐉 <strong>Boss: 蜻蜓龙</strong> — HP 27500，攻75，沙漠中，召岩浆虫</li>
+</ul>
+<div class="tip w" style="margin-top:8px"><strong>⚠️ 夏天要点：</strong>✅雪球发射器防自燃 ✅暖石放冰箱冷却后带出 ✅烤仙人掌肉降温 ✅蚁狮定期喂石头</div>
+</div>
+</div>
+
+<!-- CRAFTING -->
+<div class="tc" id="t-craft">
+<h2 class="st">⚒️ 物品合成</h2>
+<div class="tip i">💡 物品按科技等级排列。部分高级物品需要对应科技建筑才能制作。</div>
+
+<h2 class="st" style="font-size:1.05em">🪓 基础工具</h2>
+<div class="g2">
+<div class="it"><div class="ii">🪓</div><div class="ii2"><h4>斧头</h4><p>燧石×1 + 树枝×1 | 砍树</p></div></div>
+<div class="it"><div class="ii">⛏️</div><div class="ii2"><h4>鹤嘴锄</h4><p>燧石×2 + 树枝×2 | 挖矿</p></div></div>
+<div class="it"><div class="ii">🪏</div><div class="ii2"><h4>铲子</h4><p>燧石×2 + 树枝×2 | 移植植物/挖坟</p></div></div>
+<div class="it"><div class="ii">🔱</div><div class="ii2"><h4>草叉</h4><p>燧石×2 + 树枝×2 | 挖地皮</p></div></div>
+<div class="it"><div class="ii">🪒</div><div class="ii2"><h4>剃刀</h4><p>燧石×2 + 树枝×2 | 刮胡子/牛毛</p></div></div>
+<div class="it"><div class="ii">🔨</div><div class="ii2"><h4>锤子</h4><p>石头×3 + 树枝×3 + 草×2 | 拆除建筑回收材料</p></div></div>
+<div class="it"><div class="ii">🪤</div><div class="ii2"><h4>陷阱</h4><p>草×6 + 树枝×2 | 抓兔子/蜘蛛/青蛙</p></div></div>
+<div class="it"><div class="ii">🐦</div><div class="ii2"><h4>鸟陷阱</h4><p>树枝×4 + 蜘蛛丝×4 | 抓鸟</p></div></div>
+<div class="it"><div class="ii">🎣</div><div class="ii2"><h4>钓竿</h4><p>树枝×2 + 蜘蛛丝×2 | 池塘钓鱼</p></div></div>
+<div class="it"><div class="ii">🪰</div><div class="ii2"><h4>捕虫网</h4><p>树枝×4 + 蜘蛛丝×2 + 绳子×1 | 抓蝴蝶/蜜蜂/萤火虫</p></div></div>
+</div>
+
+<h2 class="st" style="font-size:1.05em">🗡️ 武器</h2>
+<div class="g2">
+<div class="it"><div class="ii">🗡️</div><div class="ii2"><h4>长矛</h4><p>燧石×1 + 绳子×1 + 树枝×2 | 攻34 基础武器</p></div></div>
+<div class="it"><div class="ii">⚔️</div><div class="ii2"><h4>暗影剑</h4><p>活木×5 + 噩梦燃料×5 | 攻68 消耗理智</p></div></div>
+<div class="it"><div class="ii">🏏</div><div class="ii2"><h4>火腿棒</h4><p>猪皮×1 + 树枝×2 + 大肉×2 | 攻59 随新鲜度降低</p></div></div>
+<div class="it"><div class="ii">⚡</div><div class="ii2"><h4>晨星锤</h4><p>伏特羊角×1 + 硝石×2 + 电子元件×2 | 攻72(湿) 发光</p></div></div>
+<div class="it"><div class="ii">🦇</div><div class="ii2"><h4>蝙蝠棒</h4><p>活木×5 + 蝙蝠翅膀×3 + 噩梦燃料×2 | 攻42 吸血</p></div></div>
+<div class="it"><div class="ii">🏹</div><div class="ii2"><h4>吹箭</h4><p>芦苇×2 + 噩梦燃料×1 + 雪鸟羽毛×1 | 远程攻100 催眠</p></div></div>
+<div class="it"><div class="ii">🪃</div><div class="ii2"><h4>回旋镖</h4><p>木板×1 + 蜘蛛丝×1 + 绳子×1 | 远程攻27 会飞回来</p></div></div>
+</div>
+
+<h2 class="st" style="font-size:1.05em">🛡️ 护甲</h2>
+<div class="g2">
+<div class="it"><div class="ii">🪖</div><div class="ii2"><h4>橄榄球头盔</h4><p>猪皮×1 + 绳子×1 | 防80% 耐久315</p></div></div>
+<div class="it"><div class="ii">🛡️</div><div class="ii2"><h4>木甲</h4><p>木头×8 + 绳子×2 | 防80% 耐久450</p></div></div>
+<div class="it"><div class="ii">⚫</div><div class="ii2"><h4>暗影甲</h4><p>噩梦燃料×5 + 草纸×3 | 防95% 消耗理智</p></div></div>
+<div class="it"><div class="ii">🪨</div><div class="ii2"><h4>大理石甲</h4><p>大理石×12 + 绳子×4 | 防95% 大幅减速</p></div></div>
+</div>
+
+<h2 class="st" style="font-size:1.05em">🧥 衣物</h2>
+<div class="g2">
+<div class="it"><div class="ii">🧥</div><div class="ii2"><h4>冬帽</h4><p>牛毛×4 + 蜘蛛丝×4 | 保暖120</p></div></div>
+<div class="it"><div class="ii">🦬</div><div class="ii2"><h4>牛帽</h4><p>牛角×1 + 牛毛×8 | 保暖240 牛不攻击</p></div></div>
+<div class="it"><div class="ii">🎩</div><div class="ii2"><h4>贝雷帽</h4><p>海象掉落 | 保暖45 理智+6.7/分</p></div></div>
+<div class="it"><div class="ii">🌸</div><div class="ii2"><h4>花环</h4><p>花×12 | 理智+1.3/分 保鲜6天</p></div></div>
+<div class="it"><div class="ii">👔</div><div class="ii2"><h4>花衬衫</h4><p>仙人掌花×3 + 蜘蛛丝×3 | 隔热+60 理智+3.3/分</p></div></div>
+<div class="it"><div class="ii">🧊</div><div class="ii2"><h4>清凉夏装</h4><p>萤火虫×5 + 花瓣×5 + 噩梦燃料×5 | 隔热+120</p></div></div>
+<div class="it"><div class="ii">☂️</div><div class="ii2"><h4>雨伞</h4><p>树枝×6 + 猪皮×1 + 蜘蛛丝×2 | 防雨90%</p></div></div>
+<div class="it"><div class="ii">🧥</div><div class="ii2"><h4>雨衣</h4><p>触手皮×2 + 绳子×2 + 骨片×2 | 防雨100%</p></div></div>
+<div class="it"><div class="ii">👁️</div><div class="ii2"><h4>眼球伞</h4><p>巨鹿眼球×1 + 骨片×15 + 活木×4 | 防雨100% 防雷 隔热</p></div></div>
+<div class="it"><div class="ii">🪨</div><div class="ii2"><h4>暖石</h4><p>石头×10 + 鹤嘴锄×1 + 草×3 | 取暖/降温 变色显示温度</p></div></div>
+</div>
+
+<h2 class="st" style="font-size:1.05em">💡 光源</h2>
+<div class="g2">
+<div class="it"><div class="ii">🔥</div><div class="ii2"><h4>火炬</h4><p>草×2 + 树枝×2 | 手持光源 耐久75秒</p></div></div>
+<div class="it"><div class="ii">🏮</div><div class="ii2"><h4>提灯</h4><p>萤火虫×2 + 树枝×3 + 绳子×2 | 放地上/手持 可加油续耐久</p></div></div>
+<div class="it"><div class="ii">⛑️</div><div class="ii2"><h4>矿工帽</h4><p>草帽×1 + 金×1 + 萤火虫×1 | 头戴光源 可加油</p></div></div>
+<div class="it"><div class="ii">🟢</div><div class="ii2"><h4>夜视镜(Moggles)</h4><p>鼹鼠×2 + 电子元件×2 + 发光浆果×2 | 夜视能力</p></div></div>
+</div>
+
+<h2 class="st" style="font-size:1.05em">🏠 建筑设施</h2>
+<div class="g2">
+<div class="it"><div class="ii">🔬</div><div class="ii2"><h4>科学机器</h4><p>金×1 石×4 木×4 | 一级科技</p></div></div>
+<div class="it"><div class="ii">⚗️</div><div class="ii2"><h4>炼金引擎</h4><p>木板×4 石砖×2 金×6 | 二级科技</p></div></div>
+<div class="it"><div class="ii">💀</div><div class="ii2"><h4>灵子分解器</h4><p>兔子×4 木板×4 草×10 | 魔法科技</p></div></div>
+<div class="it"><div class="ii">👁️</div><div class="ii2"><h4>暗影操控器</h4><p>活木×7 噩梦燃料×5 紫宝石×1 | 高级魔法科技</p></div></div>
+<div class="it"><div class="ii">🍲</div><div class="ii2"><h4>锅</h4><p>木炭×6 树枝×6 石砖×3 | 烹饪高级食物</p></div></div>
+<div class="it"><div class="ii">🧊</div><div class="ii2"><h4>冰箱</h4><p>金×1 齿轮×1 石砖×2 | 食物保鲜(半速腐烂)</p></div></div>
+<div class="it"><div class="ii">⚡</div><div class="ii2"><h4>避雷针</h4><p>金×4 石砖×1 | 防雷击火灾</p></div></div>
+<div class="it"><div class="ii">🔥</div><div class="ii2"><h4>雪球发射器</h4><p>齿轮×2 木板×4 铲子×2 | 自动灭火 防自燃</p></div></div>
+<div class="it"><div class="ii">🏕️</div><div class="ii2"><h4>帐篷</h4><p>丝线×6 树枝×4 绳子×3 | 睡觉恢复HP/理智</p></div></div>
+<div class="it"><div class="ii">💀</div><div class="ii2"><h4>肉像</h4><p>胡须×4 木板×4 大肉×4 | 复活点(扣30HP上限)</p></div></div>
+<div class="it"><div class="ii">🐔</div><div class="ii2"><h4>鸟笼</h4><p>芦苇×6 金×2 种子×2 | 喂鸟换种子/蛋</p></div></div>
+<div class="it"><div class="ii">🥩</div><div class="ii2"><h4>晒肉架</h4><p>木炭×3 绳子×3 树枝×2 | 制作肉干(+理智)</p></div></div>
+<div class="it"><div class="ii">🏠</div><div class="ii2"><h4>猪人房</h4><p>木板×4 石砖×3 猪皮×4 | 刷新猪人(给肉收买)</p></div></div>
+<div class="it"><div class="ii">🐰</div><div class="ii2"><h4>兔人房</h4><p>木板×4 + 兔人毛×4 + 胡萝卜×10 | 刷新兔人(胡萝卜收买)</p></div></div>
+</div>
+
+<h2 class="st" style="font-size:1.05em">🧪 魔法物品</h2>
+<div class="g2">
+<div class="it"><div class="ii">❤️</div><div class="ii2"><h4>生命护符</h4><p>金×3 红宝石×1 噩梦燃料×2 | 自动复活(+50HP)</p></div></div>
+<div class="it"><div class="ii">🔥</div><div class="ii2"><h4>火焰法杖</h4><p>矛×1 + 红宝石×1 + 噩梦燃料×2 | 远程点燃目标</p></div></div>
+<div class="it"><div class="ii">❄️</div><div class="ii2"><h4>冰霜法杖</h4><p>矛×1 + 蓝宝石×1 | 远程冻结目标</p></div></div>
+<div class="it"><div class="ii">🌀</div><div class="ii2"><h4>传送法杖</h4><p>活木×2 噩梦燃料×4 紫宝石×2 | 随机传送目标</p></div></div>
+<div class="it"><div class="ii">🔮</div><div class="ii2"><h4>传送焦点</h4><p>金×8 + 活木×4 + 噩梦燃料×4 | 固定传送目的地(需塞入3颗紫宝石激活)</p></div></div>
+<div class="it"><div class="ii">🎶</div><div class="ii2"><h4>排箫</h4><p>芦苇×5 + 曼德拉草×1 + 绳子×1 | 催眠周围所有生物</p></div></div>
+<div class="it"><div class="ii">🔨</div><div class="ii2"><h4>解构法杖</h4><p>活木×2 + 噩梦燃料×4 + 绿宝石×2 | 拆除建筑返还全部材料</p></div></div>
+<div class="it"><div class="ii">🌟</div><div class="ii2"><h4>唤星者法杖</h4><p>活木×2 + 噩梦燃料×4 + 黄宝石×2 | 召唤矮星(光源+热源)</p></div></div>
+</div>
+
+<h2 class="st" style="font-size:1.05em">⚓ 航海 (DST)</h2>
+<div class="g2">
+<div class="it"><div class="ii">🚢</div><div class="ii2"><h4>船套装</h4><p>木板×4 树枝×4 | 放置后展开为船</p></div></div>
+<div class="it"><div class="ii">🪵</div><div class="ii2"><h4>船补丁</h4><p>木板×2 + 树脂×2 | 修补船上的洞</p></div></div>
+<div class="it"><div class="ii">⚓</div><div class="ii2"><h4>锚</h4><p>石砖×3 绳子×3 | 固定船位置</p></div></div>
+<div class="it"><div class="ii">⛵</div><div class="ii2"><h4>桅杆</h4><p>木板×4 绳子×2 | 让船移动</p></div></div>
+<div class="it"><div class="ii">🎡</div><div class="ii2"><h4>方向舵</h4><p>木板×4 + 树枝×2 | 控制船方向</p></div></div>
+<div class="it"><div class="ii">🔥</div><div class="ii2"><h4>船火坑</h4><p>木头×2 + 草×2 | 船上光源/热源</p></div></div>
+</div>
+
+<h2 class="st" style="font-size:1.05em">🦬 骑乘装备</h2>
+<div class="g2">
+<div class="it"><div class="ii">🪑</div><div class="ii2"><h4>鞍</h4><p>猪皮×4 金×4 牛毛×4 | 基础骑乘鞍</p></div></div>
+<div class="it"><div class="ii">⚔️</div><div class="ii2"><h4>战斗鞍</h4><p>猪皮×4 金×4 牛毛×4 触手皮×2 | 骑乘时+25攻击力</p></div></div>
+<div class="it"><div class="ii">🦋</div><div class="ii2"><h4>蝴蝶鞍</h4><p>蝴蝶翅膀×18 蜘蛛丝×4 | 最轻 骑速最快</p></div></div>
+<div class="it"><div class="ii">📯</div><div class="ii2"><h4>鞍角</h4><p>树枝×2 硝石×2 | 取下牛身上的鞍</p></div></div>
+<div class="it"><div class="ii">🪮</div><div class="ii2"><h4>刷子</h4><p>猪皮×1 绳子×1 木头×2 | 刷牛毛+驯化度</p></div></div>
+</div>
+
+<h2 class="st" style="font-size:1.05em">📦 储存与运输</h2>
+<div class="g2">
+<div class="it"><div class="ii">📦</div><div class="ii2"><h4>箱子</h4><p>木板×3 | 9格储物</p></div></div>
+<div class="it"><div class="ii">🎒</div><div class="ii2"><h4>背包</h4><p>草×4 + 树枝×4 + 绳子×4 | 额外8格(穿身上)</p></div></div>
+<div class="it"><div class="ii">🎁</div><div class="ii2"><h4>捆绑包装纸</h4><p>蜡纸×1 + 绳子×1 | 打包食物永久保鲜</p></div></div>
+<div class="it"><div class="ii">🧂</div><div class="ii2"><h4>盐盒</h4><p>盐晶×4 + 木板×2 + 石砖×1 | 肉类保鲜(联机版)</p></div></div>
+</div>
+
+<h2 class="st" style="font-size:1.05em">⚙️ 远古科技</h2>
+<div class="tip w">⚠️ 远古科技需要在洞穴废墟中修复<strong>远古伪科学站</strong>后才能制作。材料来自废墟。</div>
+<div class="g2">
+<div class="it"><div class="ii">🛡️</div><div class="ii2"><h4>铥矿甲</h4><p>铥矿×6 噩梦燃料×4 | 防90% 受伤概率降理智</p></div></div>
+<div class="it"><div class="ii">👑</div><div class="ii2"><h4>铥矿皇冠</h4><p>铥矿×4 噩梦燃料×4 | 防90% 受伤概率降理智</p></div></div>
+<div class="it"><div class="ii">🗡️</div><div class="ii2"><h4>铥矿棒</h4><p>铥矿×4 噩梦燃料×4 | 攻59+额外伤害</p></div></div>
+<div class="it"><div class="ii">🪨</div><div class="ii2"><h4>铥矿护壁</h4><p>铥矿×3 + 噩梦燃料×1 | 放地上 阻挡怪物</p></div></div>
+</div>
+
+</div>
+
+<!-- WORLD -->
+<div class="tc" id="t-world">
+<h2 class="st">🗺️ 探索百科</h2>
+<h2 class="st" style="font-size:1.05em">🌍 生态环境</h2>
+<div class="g2">
+<div class="card"><h3>🟤 森林</h3><p>大量树木，蜘蛛巢、猪人房。</p><ul><li>资源：木头、木炭、蘑菇</li><li>危险：蜘蛛、触手</li></ul></div>
+<div class="card"><h3>🟢 草原</h3><p>牛群居住地，最佳基地选址之一。</p><ul><li>资源：草、牛毛、牛粪、兔子</li><li>危险：发情期牛(春)</li></ul></div>
+<div class="card"><h3>🟡 沼泽</h3><p>触手、鱼人、蜘蛛混战战场。</p><ul><li>资源：芦苇、触手皮、鱼</li><li>危险：触手(隐身)、鱼人</li></ul></div>
+<div class="card"><h3>🟠 桦树林</h3><p>猪王通常在此，格罗姆雕像。</p><ul><li>资源：猪王交易、坚果、格罗姆</li><li>危险：满月疯猪</li></ul></div>
+<div class="card"><h3>🏜️ 沙漠</h3><p>仙人掌、秃鹫、火猎犬丘。</p><ul><li>资源：仙人掌(+理智)、狗牙</li><li>危险：火猎犬群、蜻蜓龙</li></ul></div>
+<div class="card"><h3>⛏️ 矿区</h3><p>大量矿石，高脚鸟。</p><ul><li>资源：石头、金块、燧石、硝石</li><li>危险：高脚鸟(偷蛋后)</li></ul></div>
+</div>
+<h2 class="st" style="font-size:1.05em">🕳️ 洞穴与废墟</h2>
+<div class="card"><h3>🕳️ 洞穴</h3><p>地下世界，永恒黑暗。入口为陷洞。</p><ul>
+<li>永远没有日光，必须自备光源</li>
+<li>资源：荧光果(永久光源)、石笋、蘑菇森林</li>
+<li>危险：猴子(偷东西)、蝙蝠、暗影生物</li>
+<li>二层(废墟)更危险但有更好的战利品</li>
+</ul></div>
+<div class="card"><h3>🏛️ 废墟(洞穴二层)</h3><p>远古文明遗迹，最危险区域之一。</p><ul>
+<li>远古发条生物：攻击极高，掉齿轮和珍贵材料</li>
+<li>远古祭坛：修复后解锁远古科技(最强装备)</li>
+<li>⚠️ 需充分准备：大量甲、武器、食物、光源</li>
+</ul></div>
+
+<h2 class="st" style="font-size:1.05em">🌑 暴动周期 (Nightmare Cycle)</h2>
+<div class="card">
+<h3>洞穴废墟的梦魇循环</h3>
+<p>废墟区域有固定的梦魇循环周期，影响怪物生成和资源状态：</p>
+<table class="tb"><tr><th>阶段</th><th>持续时间</th><th>特征</th><th>策略</th></tr>
+<tr><td style="color:#27ae60">平静期</td><td>~6分钟</td><td>影灯关闭，暗影生物少</td><td>✅ 最安全的探索时间，抓紧采集铥矿</td></tr>
+<tr><td style="color:#d4a017">警告期</td><td>~1分钟</td><td>影灯开始闪烁</td><td>⚠️ 准备撤离，不要深入</td></tr>
+<tr><td style="color:#c0392b">暴动期</td><td>~4分钟</td><td>影灯全亮，大量暗影生物生成</td><td>❌ 极度危险！远离或找安全点等待</td></tr>
+<tr><td style="color:#3498db">黎明期</td><td>~1分钟</td><td>影灯关闭，暗影消散</td><td>🔄 过渡期，准备进入下一轮平静</td></tr>
+</table>
+<div class="tip w">⚠️ 暴动期间影灯会主动攻击你！保持距离。在平静期抓紧时间行动。</div>
+</div>
+
+<h2 class="st" style="font-size:1.05em">🌊 海洋系统 (DST)</h2>
+<div class="card">
+<h3>🌊 海洋生态</h3>
+<ul>
+<li><strong>水淹地 (Waterlogged)：</strong>浮木+巨型海带组成的海洋生物群落，有发光浆果和寄居蟹</li>
+<li><strong>隐士之家 (Hermit Island)：</strong>寄居蟹老奶奶的家，完成任务链获得珍珠（帝王蟹挑战关键道具）</li>
+<li><strong>帝王蟹区域：</strong>深海中的Boss区域，需要宝石镶嵌皇冠召唤</li>
+<li><strong>盐矿：</strong>海洋中的盐矿资源，采盐做盐盒保鲜</li>
+</ul>
+</div>
+<div class="card">
+<h3>🎣 海钓机制</h3>
+<ul>
+<li>使用<strong>海钓竿</strong>在海洋中钓鱼，需要<strong>浮标</strong>和<strong>鱼饵</strong></li>
+<li>不同鱼饵吸引不同鱼种（亮片吸引大鱼，面包屑吸引小鱼）</li>
+<li>鱼有<strong>挣扎机制</strong>，需要收线+放线配合，类似真实钓鱼</li>
+<li>深海鱼价值更高，部分鱼可做高级料理</li>
+</ul>
+</div>
+
+<h2 class="st" style="font-size:1.05em">🆕 Cursed Confrontation 新内容 (2026.6)</h2>
+<div class="card">
+<h3>🏛️ 圣殿 (Sanctum) 新区域</h3>
+<ul>
+<li>新地下城区域，包含迷宫房间和新Boss</li>
+<li><strong>路标罗盘 (Waymark Compass)：</strong>新工具，帮助在圣殿迷宫中导航</li>
+<li>可用<strong>绳索</strong>连接圣殿深渊和远古档案室，方便折返</li>
+</ul>
+</div>
+<div class="card">
+<h3>🔧 新物品与机制</h3>
+<ul>
+<li><strong>热腺体 (Heat Gland)：</strong>由 Geothermites 掉落的新材料</li>
+<li><strong>热力工具 (Thermic Tools)：</strong>新系列工具</li>
+<li><strong>煤炭陷阱 (Coals Trap)：</strong>新型陷阱</li>
+<li><strong>热膏药 (Thermal Balm)：</strong>新型治疗药膏</li>
+<li><strong>远古钥匙改动：</strong>废墟重置时不再被消耗，直接弹落</li>
+<li><strong>植物易燃：</strong>所有植物类生物（如Wormwood）现在燃烧时间更长、受火焰伤害更高</li>
+</ul>
+</div>
+
+<h2 class="st" style="font-size:1.05em">🗺️ Boss 击杀路线图</h2>
+<div class="tip">💡 推荐击杀顺序，帮助你循序渐进地推进游戏进度：</div>
+<div class="card">
+<h3>📌 推荐 Boss 击杀路线</h3>
+<table class="tb"><tr><th>阶段</th><th>Boss</th><th>目的</th><th>难度</th></tr>
+<tr><td>①</td><td>🦌 独眼巨鹿</td><td>掉眼球做<strong>眼球伞</strong>(防雨防雷)</td><td><span class="tag tag-e">简单</span></td></tr>
+<tr><td>②</td><td>🐻 熊大</td><td>掉厚毛皮做<strong>隔热背包</strong>，砍树工具人</td><td><span class="tag tag-e">简单</span></td></tr>
+<tr><td>③</td><td>♟️ 暗影棋子</td><td>掉暗影心房，为远古Boss做准备</td><td><span class="tag tag-m">中等</span></td></tr>
+<tr><td>④</td><td>🗿 远古守卫</td><td>掉远古钥匙，开启远古区域</td><td><span class="tag tag-m">中等</span></td></tr>
+<tr><td>⑤</td><td>💀 远古织影者</td><td>通关远古科技线，获得最强装备</td><td><span class="tag tag-h">困难</span></td></tr>
+<tr><td>⑥</td><td>🐉 蜻蜓龙</td><td>掉鳞片做鳞片甲，常驻Boss随时可打</td><td><span class="tag tag-h">困难</span></td></tr>
+<tr><td>⑦</td><td>🐝 蜂后</td><td>掉蜂王冠(帽子)，蜜蜂友好</td><td><span class="tag tag-h">困难</span></td></tr>
+<tr><td>⑧</td><td>🌙 天体冠军</td><td>通关月岛主线，解锁裂缝系统</td><td><span class="tag tag-h">困难</span></td></tr>
+<tr><td>⑨</td><td>💀 远古织影者(二次)</td><td>配合新装备，挑战更高难度</td><td><span class="tag tag-h">极难</span></td></tr>
+</table>
+</div>
+
+</div>
+<div class="tc" id="t-console">
+<h2 class="st">⌨️ 控制台命令大全</h2>
+<div class="tip i">📋 <strong>打开控制台：</strong>游戏中按 <kbd style="background:#333;padding:2px 8px;border-radius:4px;font-size:.9em">~</kbd> 或 <kbd style="background:#333;padding:2px 8px;border-radius:4px;font-size:.9em">`</kbd>。联机版需开启「作弊」或拥有管理员权限。点击命令即可复制。</div>
+<div class="tip w">⚠️ 使用控制台命令会标记存档为「作弊存档」，部分成就禁用。</div>
+<div style="margin:14px 0"><input class="con-search" id="conSearch" placeholder="🔍 搜索命令..." oninput="filterConsole(this.value)"></div>
+<div class="con-cat" id="conCats">
+<button class="con-cat-btn on" data-cat="all" onclick="filterCat('all',this)">全部</button>
+<button class="con-cat-btn" data-cat="player" onclick="filterCat('player',this)">🧑 玩家属性</button>
+<button class="con-cat-btn" data-cat="spawn" onclick="filterCat('spawn',this)">📦 生成物品</button>
+<button class="con-cat-btn" data-cat="world" onclick="filterCat('world',this)">🌍 世界控制</button>
+<button class="con-cat-btn" data-cat="combat" onclick="filterCat('combat',this)">⚔️ 战斗相关</button>
+<button class="con-cat-btn" data-cat="debug" onclick="filterCat('debug',this)">🔧 调试工具</button>
+<button class="con-cat-btn" data-cat="server" onclick="filterCat('server',this)">🖥️ 服务器</button>
+</div>
+<div id="conList">
+<h3 class="st" style="font-size:1.05em" data-cat="player">🧑 玩家属性</h3>
+<div class="con-cmd" data-cat="player" data-search="无敌 上帝 godmode"><div class="cmd-text">c_godmode()</div><div class="cmd-desc">上帝模式 — 无敌，不会掉血/饥饿/理智</div><button class="copy-btn" onclick="copyCmd(this)">复制</button></div>
+<div class="con-cmd" data-cat="player" data-search="超级无敌 supergodmode"><div class="cmd-text">c_supergodmode()</div><div class="cmd-desc">超级上帝 — 无敌 + 不消耗饥饿/理智</div><button class="copy-btn" onclick="copyCmd(this)">复制</button></div>
+<div class="con-cmd" data-cat="player" data-search="生命 血量 回血 heal"><div class="cmd-text">c_sethealth(1)</div><div class="cmd-desc">设置血量为满 (1=100%, 0.5=半血)</div><button class="copy-btn" onclick="copyCmd(this)">复制</button></div>
+<div class="con-cmd" data-cat="player" data-search="饥饿 饱食 hunger"><div class="cmd-text">c_sethunger(1)</div><div class="cmd-desc">设置饥饿值为满</div><button class="copy-btn" onclick="copyCmd(this)">复制</button></div>
+<div class="con-cmd" data-cat="player" data-search="理智 精神 sanity"><div class="cmd-text">c_setsanity(1)</div><div class="cmd-desc">设置理智值为满</div><button class="copy-btn" onclick="copyCmd(this)">复制</button></div>
+<div class="con-cmd" data-cat="player" data-search="回满 三围 全满"><div class="cmd-text">c_sethealth(1) c_sethunger(1) c_setsanity(1)</div><div class="cmd-desc">一键回满三围（生命+饥饿+理智）</div><button class="copy-btn" onclick="copyCmd(this)">复制</button></div>
+<div class="con-cmd" data-cat="player" data-search="速度 加速 speed"><div class="cmd-text">c_speedmult(2)</div><div class="cmd-desc">移速倍率 (1=正常, 2=双倍)</div><button class="copy-btn" onclick="copyCmd(this)">复制</button></div>
+<div class="con-cmd" data-cat="player" data-search="解锁全配方 全图纸"><div class="cmd-text">ThePlayer.components.builder:GiveAllRecipes()</div><div class="cmd-desc">解锁全部配方（无需科技即可制作）</div><button class="copy-btn" onclick="copyCmd(this)">复制</button></div>
+<div class="con-cmd" data-cat="player" data-search="传送 teleport goto"><div class="cmd-text">c_gonext("pigking")</div><div class="cmd-desc">传送到猪王附近（替换为任意prefab名）</div><button class="copy-btn" onclick="copyCmd(this)">复制</button></div>
+<div class="con-cmd" data-cat="player" data-search="复活 revive"><div class="cmd-text">c_resurrect()</div><div class="cmd-desc">复活已死亡的玩家</div><button class="copy-btn" onclick="copyCmd(this)">复制</button></div>
+<div class="con-cmd" data-cat="player" data-search="杀死 自杀 kill"><div class="cmd-text">ThePlayer.components.health:Kill()</div><div class="cmd-desc">杀死当前玩家</div><button class="copy-btn" onclick="copyCmd(this)">复制</button></div>
+
+<h3 class="st" style="font-size:1.05em" data-cat="spawn">📦 生成物品</h3>
+<div class="con-cmd" data-cat="spawn" data-search="给物品 give 获得"><div class="cmd-text">c_give("meat", 20)</div><div class="cmd-desc">给自己物品 — 此例20个大肉</div><button class="copy-btn" onclick="copyCmd(this)">复制</button></div>
+<div class="con-cmd" data-cat="spawn" data-search="生成 spawn 实体"><div class="cmd-text">c_spawn("spider", 5)</div><div class="cmd-desc">鼠标位置生成实体 — 此例5只蜘蛛</div><button class="copy-btn" onclick="copyCmd(this)">复制</button></div>
+<div class="con-cmd" data-cat="spawn" data-search="长矛 spear 武器"><div class="cmd-text">c_give("spear")</div><div class="cmd-desc">获得长矛</div><button class="copy-btn" onclick="copyCmd(this)">复制</button></div>
+<div class="con-cmd" data-cat="spawn" data-search="木甲 armor"><div class="cmd-text">c_give("armorwood")</div><div class="cmd-desc">获得木甲</div><button class="copy-btn" onclick="copyCmd(this)">复制</button></div>
+<div class="con-cmd" data-cat="spawn" data-search="橄榄球头盔 helmet"><div class="cmd-text">c_give("footballhat")</div><div class="cmd-desc">获得橄榄球头盔</div><button class="copy-btn" onclick="copyCmd(this)">复制</button></div>
+<div class="con-cmd" data-cat="spawn" data-search="行走手杖 cane"><div class="cmd-text">c_give("cane")</div><div class="cmd-desc">获得行走手杖</div><button class="copy-btn" onclick="copyCmd(this)">复制</button></div>
+<div class="con-cmd" data-cat="spawn" data-search="背包 backpack"><div class="cmd-text">c_give("backpack")</div><div class="cmd-desc">获得背包</div><button class="copy-btn" onclick="copyCmd(this)">复制</button></div>
+<div class="con-cmd" data-cat="spawn" data-search="齿轮 gears"><div class="cmd-text">c_give("gears", 10)</div><div class="cmd-desc">获得10个齿轮</div><button class="copy-btn" onclick="copyCmd(this)">复制</button></div>
+<div class="con-cmd" data-cat="spawn" data-search="金块 gold"><div class="cmd-text">c_give("goldnugget", 40)</div><div class="cmd-desc">获得40个金块</div><button class="copy-btn" onclick="copyCmd(this)">复制</button></div>
+<div class="con-cmd" data-cat="spawn" data-search="噩梦燃料 nightmare"><div class="cmd-text">c_give("nightmarefuel", 20)</div><div class="cmd-desc">获得20个噩梦燃料</div><button class="copy-btn" onclick="copyCmd(this)">复制</button></div>
+<div class="con-cmd" data-cat="spawn" data-search="活木 livinglog"><div class="cmd-text">c_give("livinglog", 10)</div><div class="cmd-desc">获得10个活木</div><button class="copy-btn" onclick="copyCmd(this)">复制</button></div>
+<div class="con-cmd" data-cat="spawn" data-search="蜘蛛丝 silk"><div class="cmd-text">c_give("silk", 40)</div><div class="cmd-desc">获得40个蜘蛛丝</div><button class="copy-btn" onclick="copyCmd(this)">复制</button></div>
+<div class="con-cmd" data-cat="spawn" data-search="肉丸 meatballs"><div class="cmd-text">c_give("meatballs", 20)</div><div class="cmd-desc">获得20个肉丸</div><button class="copy-btn" onclick="copyCmd(this)">复制</button></div>
+
+<h3 class="st" style="font-size:1.05em" data-cat="world">🌍 世界控制</h3>
+<div class="con-cmd" data-cat="world" data-search="季节 season 秋冬春夏"><div class="cmd-text">TheWorld:PushEvent("ms_setseason", "winter")</div><div class="cmd-desc">切换季节 — autumn/winter/spring/summer</div><button class="copy-btn" onclick="copyCmd(this)">复制</button></div>
+<div class="con-cmd" data-cat="world" data-search="跳过 skip 天"><div class="cmd-text">c_skip()</div><div class="cmd-desc">跳过当前时间段</div><button class="copy-btn" onclick="copyCmd(this)">复制</button></div>
+<div class="con-cmd" data-cat="world" data-search="白天 永远白天 longday"><div class="cmd-text">TheWorld:PushEvent("ms_setclocksegs", {day=16,dusk=0,night=0})</div><div class="cmd-desc">全天白天（无黄昏无夜晚）</div><button class="copy-btn" onclick="copyCmd(this)">复制</button></div>
+<div class="con-cmd" data-cat="world" data-search="重新生成 重置 regenerate"><div class="cmd-text">c_regenerateworld()</div><div class="cmd-desc">重新生成世界（⚠️ 进度丢失！）</div><button class="copy-btn" onclick="copyCmd(this)">复制</button></div>
+<div class="con-cmd" data-cat="world" data-search="天气 下雨 晴天 weather"><div class="cmd-text">TheWorld:PushEvent("ms_forceprecipitation")</div><div class="cmd-desc">切换天气（下雨↔晴天）</div><button class="copy-btn" onclick="copyCmd(this)">复制</button></div>
+<div class="con-cmd" data-cat="world" data-search="满月 fullmoon"><div class="cmd-text">TheWorld:PushEvent("ms_setmoonphase", {moonphase="full"})</div><div class="cmd-desc">设置为满月</div><button class="copy-btn" onclick="copyCmd(this)">复制</button></div>
+<div class="con-cmd" data-cat="world" data-search="移除 怪物 清除 remove"><div class="cmd-text">c_removeall("spider")</div><div class="cmd-desc">移除所有指定实体</div><button class="copy-btn" onclick="copyCmd(this)">复制</button></div>
+<div class="con-cmd" data-cat="world" data-search="清场 killall 怪物"><div class="cmd-text">for k,v in pairs(Ents) do if v:HasTag("monster") then v:Remove() end end</div><div class="cmd-desc">移除所有怪物</div><button class="copy-btn" onclick="copyCmd(this)">复制</button></div>
+
+<h3 class="st" style="font-size:1.05em" data-cat="combat">⚔️ 战斗相关</h3>
+<div class="con-cmd" data-cat="combat" data-search="秒杀 删除 oneshot"><div class="cmd-text">TheInput:GetWorldEntityUnderMouse():Remove()</div><div class="cmd-desc">鼠标指向实体直接删除（无掉落）</div><button class="copy-btn" onclick="copyCmd(this)">复制</button></div>
+<div class="con-cmd" data-cat="combat" data-search="击杀 掉落物 kill"><div class="cmd-text">TheInput:GetWorldEntityUnderMouse().components.health:Kill()</div><div class="cmd-desc">击杀鼠标实体（正常掉落）</div><button class="copy-btn" onclick="copyCmd(this)">复制</button></div>
+<div class="con-cmd" data-cat="combat" data-search="独眼巨鹿 deerclops boss"><div class="cmd-text">c_spawn("deerclops")</div><div class="cmd-desc">生成独眼巨鹿 Boss</div><button class="copy-btn" onclick="copyCmd(this)">复制</button></div>
+<div class="con-cmd" data-cat="combat" data-search="熊大 bearger boss"><div class="cmd-text">c_spawn("bearger")</div><div class="cmd-desc">生成熊大 Boss</div><button class="copy-btn" onclick="copyCmd(this)">复制</button></div>
+<div class="con-cmd" data-cat="combat" data-search="蜻蜓龙 dragonfly boss"><div class="cmd-text">c_spawn("dragonfly")</div><div class="cmd-desc">生成蜻蜓龙 Boss</div><button class="copy-btn" onclick="copyCmd(this)">复制</button></div>
+<div class="con-cmd" data-cat="combat" data-search="驼鹿 moose boss"><div class="cmd-text">c_spawn("moose")</div><div class="cmd-desc">生成驼鹿 Boss</div><button class="copy-btn" onclick="copyCmd(this)">复制</button></div>
+<div class="con-cmd" data-cat="combat" data-search="隐身 notarget 仇恨"><div class="cmd-text">ThePlayer:AddTag("notarget")</div><div class="cmd-desc">隐身模式 — 怪物不主动攻击</div><button class="copy-btn" onclick="copyCmd(this)">复制</button></div>
+
+<h3 class="st" style="font-size:1.05em" data-cat="debug">🔧 调试工具</h3>
+<div class="con-cmd" data-cat="debug" data-search="地图全开 reveal"><div class="cmd-text">c_revealmap()</div><div class="cmd-desc">地图全开（DST原生命令，一键执行）</div><button class="copy-btn" onclick="copyCmd(this)">复制</button></div>
+<div class="con-cmd" data-cat="debug" data-search="坐标 位置 position"><div class="cmd-text">print(ThePlayer:GetPosition())</div><div class="cmd-desc">打印玩家坐标</div><button class="copy-btn" onclick="copyCmd(this)">复制</button></div>
+<div class="con-cmd" data-cat="debug" data-search="传送 坐标 SetPosition"><div class="cmd-text">ThePlayer.Transform:SetPosition(x, y, z)</div><div class="cmd-desc">传送到指定坐标</div><button class="copy-btn" onclick="copyCmd(this)">复制</button></div>
+<div class="con-cmd" data-cat="debug" data-search="列出 实体 prefab"><div class="cmd-text">for k,v in pairs(Ents) do print(v.prefab) end</div><div class="cmd-desc">列出所有实体 prefab 名</div><button class="copy-btn" onclick="copyCmd(this)">复制</button></div>
+<div class="con-cmd" data-cat="debug" data-search="广播 消息 announce"><div class="cmd-text">c_announce("测试消息")</div><div class="cmd-desc">向所有玩家广播（联机版）</div><button class="copy-btn" onclick="copyCmd(this)">复制</button></div>
+
+<h3 class="st" style="font-size:1.05em" data-cat="server">🖥️ 服务器管理</h3>
+<div class="con-cmd" data-cat="server" data-search="踢人 kick"><div class="cmd-text">TheNet:Kick(userid)</div><div class="cmd-desc">踢出玩家</div><button class="copy-btn" onclick="copyCmd(this)">复制</button></div>
+<div class="con-cmd" data-cat="server" data-search="封禁 ban"><div class="cmd-text">TheNet:Ban(userid)</div><div class="cmd-desc">封禁玩家</div><button class="copy-btn" onclick="copyCmd(this)">复制</button></div>
+<div class="con-cmd" data-cat="server" data-search="回档 rollback"><div class="cmd-text">TheNet:SendWorldRollbackRequestToServer(1)</div><div class="cmd-desc">回档1天（最大5天）</div><button class="copy-btn" onclick="copyCmd(this)">复制</button></div>
+<div class="con-cmd" data-cat="server" data-search="保存 save"><div class="cmd-text">c_save()</div><div class="cmd-desc">手动保存世界</div><button class="copy-btn" onclick="copyCmd(this)">复制</button></div>
+<div class="con-cmd" data-cat="server" data-search="重启 restart"><div class="cmd-text">c_reset()</div><div class="cmd-desc">重启服务器</div><button class="copy-btn" onclick="copyCmd(this)">复制</button></div>
+<div class="con-cmd" data-cat="server" data-search="管理员 admin"><div class="cmd-text">TheNet:SetServerAdmin(userid, true)</div><div class="cmd-desc">授予管理员权限</div><button class="copy-btn" onclick="copyCmd(this)">复制</button></div>
+</div>
+
+<h2 class="st">📋 常用物品代码速查表</h2>
+<div class="tip i">💡 使用 <code>c_give("物品代码", 数量)</code> 获得物品。点击代码复制。</div>
+<h3 style="color:var(--gold);margin:16px 0 8px;font-size:.95em">🥩 食物</h3>
+<table class="spawn-table"><tr><th>物品</th><th>代码</th><th>说明</th></tr>
+<tr><td>大肉</td><td class="code" onclick="copyText(this.textContent)">meat</td><td>击杀生物</td></tr>
+<tr><td>小肉</td><td class="code" onclick="copyText(this.textContent)">smallmeat</td><td>小型生物</td></tr>
+<tr><td>怪物肉</td><td class="code" onclick="copyText(this.textContent)">monstermeat</td><td>蜘蛛/猎犬</td></tr>
+<tr><td>浆果</td><td class="code" onclick="copyText(this.textContent)">berries</td><td>浆果丛</td></tr>
+<tr><td>胡萝卜</td><td class="code" onclick="copyText(this.textContent)">carrot</td><td>地面采集</td></tr>
+<tr><td>鸡蛋</td><td class="code" onclick="copyText(this.textContent)">bird_egg</td><td>鸟笼产出</td></tr>
+<tr><td>黄油</td><td class="code" onclick="copyText(this.textContent)">butter</td><td>蝴蝶1%</td></tr>
+<tr><td>蜂蜜</td><td class="code" onclick="copyText(this.textContent)">honey</td><td>蜂箱</td></tr>
+<tr><td>肉丸</td><td class="code" onclick="copyText(this.textContent)">meatballs</td><td>锅料理</td></tr>
+<tr><td>培根煎蛋</td><td class="code" onclick="copyText(this.textContent)">baconeggs</td><td>锅料理</td></tr>
+<tr><td>波兰饺子</td><td class="code" onclick="copyText(this.textContent)">perogies</td><td>+40血</td></tr>
+<tr><td>太妃糖</td><td class="code" onclick="copyText(this.textContent)">taffy</td><td>+15理智</td></tr>
+</table>
+<h3 style="color:var(--gold);margin:16px 0 8px;font-size:.95em">🛡️ 装备</h3>
+<table class="spawn-table"><tr><th>物品</th><th>代码</th><th>说明</th></tr>
+<tr><td>长矛</td><td class="code" onclick="copyText(this.textContent)">spear</td><td>攻34</td></tr>
+<tr><td>暗影剑</td><td class="code" onclick="copyText(this.textContent)">nightsword</td><td>攻68</td></tr>
+<tr><td>触手棒</td><td class="code" onclick="copyText(this.textContent)">tentaclespike</td><td>攻51</td></tr>
+<tr><td>木甲</td><td class="code" onclick="copyText(this.textContent)">armorwood</td><td>防80%</td></tr>
+<tr><td>橄榄球头盔</td><td class="code" onclick="copyText(this.textContent)">footballhat</td><td>防80%</td></tr>
+<tr><td>大理石甲</td><td class="code" onclick="copyText(this.textContent)">armormarble</td><td>防95%</td></tr>
+<tr><td>暗影甲</td><td class="code" onclick="copyText(this.textContent)">armor_sanity</td><td>防95%</td></tr>
+<tr><td>行走手杖</td><td class="code" onclick="copyText(this.textContent)">cane</td><td>移速+25%</td></tr>
+<tr><td>火腿棒</td><td class="code" onclick="copyText(this.textContent)">hambat</td><td>攻59</td></tr>
+<tr><td>晨星锤</td><td class="code" onclick="copyText(this.textContent)">nightstick</td><td>攻72</td></tr>
+</table>
+<h3 style="color:var(--gold);margin:16px 0 8px;font-size:.95em">🏠 材料</h3>
+<table class="spawn-table"><tr><th>物品</th><th>代码</th><th>说明</th></tr>
+<tr><td>木头</td><td class="code" onclick="copyText(this.textContent)">log</td><td>砍树</td></tr>
+<tr><td>石头</td><td class="code" onclick="copyText(this.textContent)">rocks</td><td>挖矿</td></tr>
+<tr><td>金块</td><td class="code" onclick="copyText(this.textContent)">goldnugget</td><td>金矿</td></tr>
+<tr><td>齿轮</td><td class="code" onclick="copyText(this.textContent)">gears</td><td>发条怪</td></tr>
+<tr><td>草</td><td class="code" onclick="copyText(this.textContent)">cutgrass</td><td>采集</td></tr>
+<tr><td>树枝</td><td class="code" onclick="copyText(this.textContent)">twigs</td><td>采集</td></tr>
+<tr><td>燧石</td><td class="code" onclick="copyText(this.textContent)">flint</td><td>拾取</td></tr>
+<tr><td>绳子</td><td class="code" onclick="copyText(this.textContent)">rope</td><td>草×3</td></tr>
+<tr><td>木板</td><td class="code" onclick="copyText(this.textContent)">boards</td><td>木头×4</td></tr>
+<tr><td>石砖</td><td class="code" onclick="copyText(this.textContent)">cutstone</td><td>石头×3</td></tr>
+<tr><td>蜘蛛丝</td><td class="code" onclick="copyText(this.textContent)">silk</td><td>蜘蛛</td></tr>
+<tr><td>噩梦燃料</td><td class="code" onclick="copyText(this.textContent)">nightmarefuel</td><td>暗影怪</td></tr>
+<tr><td>活木</td><td class="code" onclick="copyText(this.textContent)">livinglog</td><td>树精</td></tr>
+<tr><td>猪皮</td><td class="code" onclick="copyText(this.textContent)">pigskin</td><td>猪人</td></tr>
+<tr><td>木炭</td><td class="code" onclick="copyText(this.textContent)">charcoal</td><td>烧树</td></tr>
+</table>
+<h3 style="color:var(--gold);margin:16px 0 8px;font-size:.95em">👑 Boss 物品</h3>
+<table class="spawn-table"><tr><th>物品</th><th>代码</th><th>说明</th></tr>
+<tr><td>巨鹿眼球</td><td class="code" onclick="copyText(this.textContent)">deerclops_eyeball</td><td>巨鹿</td></tr>
+<tr><td>厚毛皮</td><td class="code" onclick="copyText(this.textContent)">bearger_fur</td><td>熊大</td></tr>
+<tr><td>鳞片</td><td class="code" onclick="copyText(this.textContent)">dragon_scales</td><td>蜻蜓龙</td></tr>
+<tr><td>天体宝球</td><td class="code" onclick="copyText(this.textContent)">moonrockseed</td><td>天体主线</td></tr>
+<tr><td>远古钥匙</td><td class="code" onclick="copyText(this.textContent)">atrium_key</td><td>远古大门</td></tr>
+<tr><td>格罗姆花</td><td class="code" onclick="copyText(this.textContent)">glommerflower</td><td>满月开花</td></tr>
+<tr><td>眼骨</td><td class="code" onclick="copyText(this.textContent)">chester_eyebone</td><td>召唤切斯特</td></tr>
+</table>
+
+</div>
+
+<div class="copy-toast" id="copyToast">✅ 已复制</div>
+
+<style>
+.con-cmd{background:#111;border:1px solid #333;border-radius:8px;padding:12px 14px;margin:6px 0;cursor:pointer;transition:.2s;position:relative;font-family:'Consolas','Courier New',monospace;font-size:.85em;line-height:1.5}
+.con-cmd:hover{border-color:var(--gold);background:#181818}
+.con-cmd .cmd-text{color:#4ec9b0;word-break:break-all;user-select:all}
+.con-cmd .cmd-desc{color:var(--dim);font-family:'Segoe UI','Microsoft YaHei',sans-serif;font-size:.9em;margin-top:3px}
+.con-cmd .copy-btn{position:absolute;top:8px;right:8px;background:var(--gold);color:var(--bg);border:none;border-radius:4px;padding:3px 10px;font-size:.75em;cursor:pointer;opacity:0;transition:.2s}
+.con-cmd:hover .copy-btn{opacity:1}
+.con-cmd .copy-btn:active{background:#27ae60}
+.con-cat{margin:6px 0}
+.con-cat-btn{display:inline-block;padding:4px 14px;border-radius:20px;border:1px solid var(--border);background:var(--card);color:var(--dim);cursor:pointer;font-size:.8em;margin:3px;transition:.3s}
+.con-cat-btn.on{border-color:var(--gold);color:var(--gold);background:rgba(212,160,23,.08)}
+.con-search{width:100%;padding:10px 14px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:.9em;outline:none;margin-bottom:12px;font-family:inherit}
+.con-search:focus{border-color:var(--gold)}
+.spawn-table{width:100%;border-collapse:collapse;font-size:.85em;margin:8px 0}
+.spawn-table th{background:var(--card2);color:var(--gold);padding:8px 10px;text-align:left;border-bottom:2px solid var(--border)}
+.spawn-table td{padding:7px 10px;border-bottom:1px solid var(--border);font-family:monospace;font-size:.92em}
+.spawn-table tr:hover td{background:rgba(212,160,23,.03)}
+.spawn-table .code{color:#4ec9b0;cursor:pointer}
+.spawn-table .code:hover{color:var(--gold);text-decoration:underline}
+.copy-toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#27ae60;color:#fff;padding:8px 20px;border-radius:20px;font-size:.85em;z-index:9999;display:none;animation:toastIn .3s}
+@keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(-10px)}to{opacity:1;transform:translateX(-50%) none}}
+</style>
+</div><!-- end main -->
+
+<button class="btt" id="btt" onclick="scrollTo({top:0,behavior:'smooth'})">↑</button>
+<footer>
+<p>💀 饥荒百科全书 — 数据参考 <a href="https://dontstarve.wiki.gg" target="_blank">Don't Starve Wiki</a> | 基于 Don't Starve Together 联机版 (From Beyond - Cursed Confrontation Part 1, Version 2026)</p>
+<p style="margin-top:5px">在饥荒的世界里，死亡是学习的一部分。每一次失败都让你更接近生存。</p>
+<p style="margin-top:4px;font-size:.7em;color:#555">DST Mobile 版将于 2026年7月21日上线 · 2026路线图确认 DST 继续更新</p>
+</footer>
+
+<script>
+// Characters data
+const chars=[
+{id:'wilson',icon:'🧑',name:'威尔逊',title:'绅士科学家',hp:150,hun:150,san:200,diff:1,
+ desc:'默认角色，长胡子可做复活肉像。胡子冬天提供保暖。',
+ detail:'<strong>特殊能力：</strong>长出胡子（16天），剃掉获得胡子×1（用于做复活肉像），冬天胡子提供额外保暖。<br><strong>攻略：</strong>最平衡的入门角色，无明显缺点。利用胡子在第一个冬天前做出复活肉像。适合新手熟悉游戏。'},
+{id:'willow',icon:'🔥',name:'薇洛',title:'纵火者',hp:150,hun:150,san:120,diff:2,
+ desc:'免疫火焰伤害，自带打火机。低理智时会随机放火。',
+ detail:'<strong>特殊能力：</strong>自带薇洛打火机(无限耐久小光源)；免疫火焰伤害；理智低于60%时会随机点火。<br><strong>攻略：</strong>打火机前期省资源。注意保持理智避免烧家。联机版改为靠近火焰回理智。'},
+{id:'wolfgang',icon:'💪',name:'沃尔夫冈',title:'大力士',hp:200,hun:300,san:200,diff:2,
+ desc:'吃饱后攻击力翻倍，饥饿时攻击力降低。饱食度下降更快。',
+ detail:'<strong>特殊能力：</strong>饱食度>175时进入强力状态：攻击力×2、移速+10%、体型变大；饱食度<100时变弱：攻击力×0.75。饱食度下降速度是正常的1.1-3倍。<br><strong>攻略：</strong>最强战斗角色，打Boss前吃饱。缺点是食物消耗大，需要大量肉丸储备。'},
+{id:'wendy',icon:'👻',name:'温蒂',title:'失去亲人的少女',hp:150,hun:150,san:200,diff:2,
+ desc:'攻击力只有0.75倍，但召唤姐姐鬼魂阿比盖尔协助战斗。',
+ detail:'<strong>特殊能力：</strong>攻击力×0.75；用阿比盖尔之花召唤姐姐鬼魂(范围AOE攻击，对弱小群体极强)；不怕暗影怪物(理智惩罚减半)。<br><strong>攻略：</strong>阿比盖尔清蜘蛛巢、蜜蜂、青蛙群非常强。但打Boss效果一般。适合不喜欢正面战斗的玩家。'},
+{id:'wx78',icon:'🤖',name:'WX-78',title:'没有灵魂的机器人',hp:100,hun:100,san:100,diff:2,
+ desc:'吃齿轮升级属性(最高400HP/200饥饿/300理智)。下雨受伤但被雷击加速。',
+ detail:'<strong>特殊能力：</strong>吃齿轮永久提升三维(每个齿轮+20HP/6.67饥饿/13.33理智)；被雷击后发光+加速(持续数天)；下雨持续掉血。<br><strong>攻略：</strong>前期弱但吃齿轮后成长潜力巨大。遇到齿轮怪必打。联机版推荐配合Wickerbottom的书读闪电。'},
+{id:'wickerbottom',icon:'📚',name:'维克波顿',title:'图书管理员',hp:150,hun:150,san:200,diff:3,
+ desc:'能制作魔法书籍，不能睡觉。开局解锁更多配方。',
+ detail:'<strong>特殊能力：</strong>开局解锁一级科技(不需要科学机器)；制作5种魔法书（催眠书、触手书、闪电书、植物书、鸟类书）；不能睡觉（帐篷/草席卷无效）。<br><strong>攻略：</strong>最强辅助角色之一。触手书配合沼泽可以刷大量材料。缺点是不能睡觉恢复理智。'},
+{id:'woodie',icon:'🪓',name:'伍迪',title:'伐木工',hp:150,hun:150,san:200,diff:2,
+ desc:'自带无限耐久露西斧。满月/砍树过多变成海狸。',
+ detail:'<strong>特殊能力：</strong>自带露西斧(无限耐久，砍树极快)；满月或砍树过多变成海狸形态(高攻高防，但无法使用物品，持续时间有限)。联机版有3种变身：海狸(砍树)、鹅(跑图)、鹿(战斗)。<br><strong>攻略：</strong>伐木效率极高。变身要控制好时间和位置。联机版三种变身非常灵活。'},
+{id:'wes',icon:'🎈',name:'韦斯',title:'默剧演员',hp:113,hun:113,san:150,diff:5,
+ desc:'属性最低，攻击力×0.75。吹气球做陷阱。真正的挑战模式。',
+ detail:'<strong>特殊能力：</strong>攻击力×0.75，三维都较低。能吹气球(做气球陷阱/气球装饰)。说话用默剧表达(别人看不懂)。<br><strong>攻略：</strong>官方挑战角色。极其困难，适合老手自我挑战。气球可以作为小陷阱使用。'},
+{id:'maxwell',icon:'🎩',name:'麦斯威尔',title:'噩梦之王',hp:75,hun:150,san:200,diff:3,
+ desc:'HP极低但理智回复极快。能召唤暗影仆从帮忙砍树挖矿。',
+ detail:'<strong>特殊能力：</strong>HP仅75(最低)；理智自然回复极快(20/分钟)；用暗影之书召唤暗影仆从(最多3-4个，帮你砍树/挖矿/战斗)。<br><strong>攻略：</strong>适合喜欢召唤流的玩家。暗影仆从帮采集效率极高。但HP极低，战斗很危险，需要甲和走位。'},
+{id:'wigfrid',icon:'⚔️',name:'薇格弗德',title:'女武神/战斗演员',hp:200,hun:120,san:120,diff:2,
+ desc:'只能吃肉。攻击力×1.25，受到伤害减少25%。击杀回血回理智。',
+ detail:'<strong>特殊能力：</strong>只能吃肉(含肉料理)；攻击力×1.25；受伤减少25%；击杀敌人回复HP和理智；自带战斗长矛和战斗头盔配方。<br><strong>攻略：</strong>最强战斗角色之一。缺点是只吃肉(前期可能缺食物)。打Boss利器。'},
+{id:'webber',icon:'🕷️',name:'韦伯',title:'蜘蛛人',hp:175,hun:175,san:100,diff:3,
+ desc:'蜘蛛不主动攻击。能收买蜘蛛、种蜘蛛巢。猪人敌对。',
+ detail:'<strong>特殊能力：</strong>蜘蛛和蜘蛛战士不主动攻击；给蜘蛛肉/怪物肉可收买蜘蛛；能在地面种植蜘蛛巢；猪人和兔人敌对。<br><strong>攻略：</strong>蜘蛛大军流。大量蜘蛛从者非常强力。但低理智+猪人敌对需要注意。剃胡子得蜘蛛丝。'},
+{id:'winona',icon:'🔧',name:'薇诺娜',title:'工程师',hp:150,hun:150,san:200,diff:1,
+ desc:'制作速度更快。能造聚光灯、投石机、发电机。',
+ detail:'<strong>特殊能力：</strong>制作速度×1.5；能建造独特建筑：聚光灯(照明)、投石机(自动攻击)、发电机(供电)。第一次制作物品不消耗材料(联机版)。<br><strong>攻略：</strong>基地建设大师。投石机群防猎犬非常好用。发电机提供电力驱动其他设备。'},
+{id:'wortox',icon:'😈',name:'沃托克斯',title:'灵魂恶魔',hp:200,hun:175,san:150,diff:2,
+ desc:'收集灵魂回复HP和饥饿。能用灵魂传送跳跃。吃食物效果减半。',
+ detail:'<strong>特殊能力：</strong>击杀生物掉落灵魂(最多20个)；吃灵魂回复20HP/18.75饥饿/-5理智；消耗灵魂传送跳跃(短距离瞬移)；吃普通食物效果×0.5。<br><strong>攻略：</strong>灵魂流玩法。大量打蝴蝶/蜜蜂收灵魂。传送跳跃非常好用(过河/逃脱)。联机版优秀辅助。'},
+{id:'wormwood',icon:'🌱',name:'沃姆伍德',title:'植物人',hp:150,hun:150,san:200,diff:3,
+ desc:'种植不需施肥。被荆棘伤害。用粪便和腐烂物回血。',
+ detail:'<strong>特殊能力：</strong>种植不需要施肥(直接种)；开花时周围植物加速生长；受伤/被蜜蜂不计仇恨(联机版)；只能通过粪便/腐烂物/活木等回血(食物不回血)。<br><strong>攻略：</strong>农场流最强。大量种植食物和花。缺点是回血方式有限。'},
+{id:'warly',icon:'👨‍🍳',name:'沃利',title:'厨师',hp:150,hun:250,san:200,diff:3,
+ desc:'只能吃锅料理。自带便携锅。吃重复食物效果递减。',
+ detail:'<strong>特殊能力：</strong>只能吃锅料理(生食/烤熟的食物不能吃)；自带便携锅(随时随地烹饪)；吃同种食物效果递减(第4次起效果减半)；能做独家料理(辣椒酱、大蒜粉等调料加成)。<br><strong>攻略：</strong>高难度食物管理角色。需要掌握多种食谱轮换。调料系统提供强力buff。'},
+{id:'wurt',icon:'🐟',name:'沃特',title:'鱼人公主',hp:150,hun:200,san:150,diff:3,
+ desc:'鱼人友好，能建鱼人屋。素食主义。湿身不减理智。',
+ detail:'<strong>特殊能力：</strong>鱼人和鱼人王友好；能在地面建造鱼人屋(召唤鱼人从者)；只吃素食(蔬菜水果蘑菇)；湿身不减理智反而加理智(联机版)。<br><strong>攻略：</strong>鱼人大军流。建大量鱼人屋组成军队。素食限制需要农场支撑。'},
+{id:'walter',icon:'🏕️',name:'沃尔特',title:'童子军',hp:135,hun:113,san:200,diff:2,
+ desc:'自带弹弓远程攻击。被攻击不掉理智。有宠物狗沃比。',
+ detail:'<strong>特殊能力：</strong>自带弹弓(远程攻击，不消耗武器耐久)；受到攻击不减理智(联机版)；自带沃比(狗背包)；在帐篷/睡袋外睡觉恢复理智(联机版)；怕蜜蜂(被蜂蛰额外伤害)。<br><strong>攻略：</strong>远程安全输出。弹弓风筝打法非常安全。沃比提供额外储物。'},
+{id:'wanda',icon:'⏰',name:'旺达',title:'时间法师',hp:150,hun:175,san:200,diff:4,
+ desc:'用年龄代替HP。年老时攻击力极高但血量极低，高风险高回报。',
+ detail:'<strong>特殊能力：</strong>HP被「年龄」替代（60/80/180对应老/中/青）。<strong>年轻时(20-35岁)攻击力仅为1.0x；年老时(66-80岁)攻击力提升至1.75x</strong>（使用专属武器警钟可打出119点伤害）。年老时血量极低，一旦被打中就可能死亡。有独特的时间传送系统。<br><strong>攻略：</strong>最强后期角色之一。年龄越大血线越危险但伤害越高——典型的高风险高回报。需要精准管理年龄，搭配回血手段。'}
+];
+
+// Recipes data
+const recipes=[
+{name:'肉丸',icon:'🧆',ingr:'怪物肉×1 + 浆果×3',hun:'+62.5',hp:'+3',san:'0',top:true,tip:'最常用食物，性价比极高'},
+{name:'培根煎蛋',icon:'🍳',ingr:'大肉×1 + 怪物肉×1 + 蛋×2',hun:'+75',hp:'+20',san:'0',top:true,tip:'高饱食+回血。蛋值必须≥2.0，需要2个蛋'},
+{name:'波兰饺子(水饺)',icon:'🥟',ingr:'肉×1 + 蔬菜×1 + 蛋×1 + 填充×1(不可用树枝)',hun:'+37.5',hp:'+40',san:'0',top:true,tip:'最高回血锅料理。注意：放入树枝会变成串烧！'},
+{name:'太妃糖',icon:'🍬',ingr:'蜂蜜×3 + 树枝×1',hun:'+25',hp:'-3',san:'+15',top:true,tip:'最佳理智恢复食物'},
+{name:'火鸡正餐',icon:'🍗',ingr:'鸡腿×2 + 肉×1 + 蔬菜/浆果×1',hun:'+75',hp:'+20',san:'0',top:false,tip:'需要鸡腿(暴怒鸡掉落)'},
+{name:'炖肉',icon:'🫕',ingr:'怪物肉×1 + 大肉×3',hun:'+150',hp:'+12',san:'0',top:false,tip:'超高饱食度'},
+{name:'蛙腿三明治',icon:'🥪',ingr:'蛙腿×1 + 蔬菜×2 + 树枝×1',hun:'+37.5',hp:'+20',san:'0',top:false,tip:'青蛙雨后大量材料'},
+{name:'鱼条',icon:'🐟',ingr:'鱼×1 + 树枝×1 + 填充×2',hun:'+37.5',hp:'+40',san:'0',top:false,tip:'钓鱼后的优质料理'},
+{name:'鱼肉塔可',icon:'🌮',ingr:'鱼×1 + 玉米×1 + 填充×2',hun:'+37.5',hp:'+20',san:'+5',top:false,tip:'带回血的鱼料理'},
+{name:'蜂蜜火腿',icon:'🍖',ingr:'蜂蜜×1 + 大肉×1 + 怪物肉×1 + 填充×1',hun:'+75',hp:'+30',san:'0',top:false,tip:'火腿+蜂蜜组合'},
+{name:'蜜汁卤肉',icon:'🍯',ingr:'蜂蜜×1 + 怪物肉×1 + 浆果×2',hun:'+37.5',hp:'+20',san:'+5',top:false,tip:'肉值必须≤1.5，放2个怪物肉会变成蜂蜜火腿'},
+{name:'蔬菜杂烩',icon:'🥗',ingr:'蔬菜×4 (不可有树枝)',hun:'+37.5',hp:'+3',san:'+5',top:false,tip:'纯蔬菜配方，不加肉'},
+{name:'果酱',icon:'🫙',ingr:'浆果×4',hun:'+37.5',hp:'+3',san:'+5',top:false,tip:'纯浆果配方，新手友好'},
+{name:'南瓜饼',icon:'🎃',ingr:'南瓜×1 + 蜂蜜×2 + 填充×1',hun:'+37.5',hp:'0',san:'+15',top:false,tip:'另一种理智恢复方案'},
+{name:'华夫饼',icon:'🧇',ingr:'黄油×1 + 蛋×1 + 浆果×1 + 填充×1',hun:'+37.5',hp:'+60',san:'0',top:false,tip:'超高回血，黄油稀有'},
+{name:'水果杂烩',icon:'🍇',ingr:'水果×4 (不可有肉/蔬菜)',hun:'+25',hp:'+20',san:'+5',top:false,tip:'纯水果配方'},
+{name:'辣椒酱',icon:'🌶️',ingr:'辣椒×1 + 肉×1.5 + 填充×2',hun:'+37.5',hp:'0',san:'0',top:false,tip:'沃利专属，加攻击力'},
+{name:'怪物千层饼',icon:'🤮',ingr:'怪物肉×2 + 非怪物填充×2',hun:'+37.5',hp:'-20',san:'-20',top:false,tip:'⚠️ 用2+怪物肉必出，属性很差'},
+{name:'潮湿黏糊',icon:'💧',ingr:'非配方组合',hun:'+9.4',hp:'-3',san:'-5',top:false,tip:'失败产物，放太多树枝/冰块'},
+{name:'花沙拉',icon:'🌸',ingr:'仙人掌花×1 + 蔬菜×2 + 填充×1',hun:'+12.5',hp:'0',san:'+40',top:false,tip:'联机版，最高理智恢复'},
+];
+
+// Bosses
+const bosses=[
+{name:'独眼巨鹿 Deerclops',icon:'🦌',hp:4000,atk:75,season:'冬季(第30天)',
+ drops:'巨鹿眼球×1 + 大肉×8',
+ tip:'范围冰冻攻击，打2走1。引到触手群/蜘蛛巢。掉眼球做眼球伞(防雨防雷)'},
+{name:'驼鹿 Moose/Goose',icon:'🦆',hp:6000,atk:75,season:'春季',
+ drops:'驼鹿羽毛×3-5 + 大肉×6',
+ tip:'产蛋孵小鸭，优先清小鸭。攻击节奏打3走1。掉毛做雷电吹箭。'},
+{name:'蜻蜓龙 Dragonfly',icon:'🐉',hp:27500,atk:75,season:'夏季(沙漠常驻)',
+ drops:'鳞片×1 + 大肉×8',
+ tip:'联机版为常驻沙盒Boss，血量极高。会召唤岩浆虫。用墙壁围住岩浆虫池。需充分准备。'},
+{name:'熊大 Bearger',icon:'🐻',hp:6000,atk:100,season:'秋季',
+ drops:'厚毛皮×1 + 大肉×8',
+ tip:'范围拍击+冲撞。冲撞后有硬直可输出。掉落毛皮做隔热背包/冬帽。'},
+{name:'克劳斯 Klaus',icon:'🦌',hp:10000,atk:75,season:'冬季盛宴(圣诞)',
+ drops:'克劳斯钥匙(开宝藏) + 大量战利品',
+ tip:'双阶段Boss。一阶段10000HP，二阶段复活后5000HP+召唤小鹿。用钥匙开宝藏得稀有物品。'},
+{name:'远古织影者 Ancient Fuelweaver',icon:'💀',hp:16000,atk:100,season:'废墟(需触发)',
+ drops:'骨骼盔甲 + 暗影心脏',
+ tip:'最终Boss。召唤暗影之手、暗影傀儡。需要顶级装备+多人配合。'},
+{name:'蜂后 Bee Queen',icon:'🐝',hp:22500,atk:60,season:'任意(蜂巢召唤)',
+ drops:'蜂王冠 + 蜂后蜂蜜 + 蜂王浆',
+ tip:'从巨大蜂巢召唤。召唤蜜蜂卫士，优先清小蜜蜂。多人推荐。'},
+{name:'蛤蟆精 Toadstool',icon:'🐸',hp:52500,atk:100,season:'洞穴(蘑菇林)',
+ drops:'毒菌帽 + 蛤蟆皮',
+ tip:'洞穴Boss，超高HP。会释放毒孢子。需要大量准备，多人推荐。'},
+{name:'天体冠军 Celestial Champion',icon:'🌙',hp:20000,atk:80,season:'月岛(主线)',
+ drops:'启迪之冠碎片 + 天体宝球',
+ tip:'月球主线最终Boss。三阶段战斗，每阶段不同攻击模式。解锁裂缝系统。'},
+{name:'帝王蟹 Crab King',icon:'🦀',hp:10000,atk:100,season:'海洋(需召唤)',
+ drops:'帝王蟹钳 + 珍珠',
+ tip:'海洋Boss。用不同宝石镶嵌皇冠召唤。会召唤冰柱/火柱。'},
+{name:'邪天翁 Malbatross',icon:'🦆',hp:3000,atk:75,season:'海洋/钓鱼点',
+ drops:'邪天翁羽毛 + 鱼肉',
+ tip:'海洋Boss。在深海钓鱼点附近出现。会吹风推船。远程用鱼叉。'},
+{name:'远古守卫 Ancient Guardian',icon:'🗿',hp:10000,atk:100,season:'洞穴迷宫',
+ drops:'远古钥匙 + 大肉 + 骨甲',
+ tip:'联机版重做后血量大幅提升。攻击模式简单但伤害高。打3走1。掉远古钥匙。'},
+{name:'暗影棋子 Shadow Pieces',icon:'♟️',hp:1000,atk:40,season:'满月(需雕塑)',
+ drops:'暗影心房 + 噩梦燃料',
+ tip:'满月时从3个雕塑召唤。骑士/主教/战车三个阶段，越来越强。'},
+];
+
+// Regular mobs
+const mobs=[
+{name:'蜘蛛',icon:'🕷️',hp:100,atk:20,loc:'蜘蛛巢旁',drops:'怪物肉、蜘蛛丝、腺体',tip:'打1走1。用陷阱安全刷。3级巢出女王。'},
+{name:'蜘蛛战士',icon:'🕷️',hp:400,atk:40,loc:'2/3级巢召唤',drops:'怪物肉、蜘蛛丝',tip:'会跳跃攻击，打2走1。远离巢再打。'},
+{name:'猎犬',icon:'🐕',hp:150,atk:20,loc:'定时来袭',drops:'怪物肉、狗牙',tip:'成群出现。用陷阱阵或引到牛群。后期有火/冰猎犬。'},
+{name:'触手',icon:'🦑',hp:500,atk:20,loc:'沼泽',drops:'怪物肉、触手皮、芦苇',tip:'隐身攻击，被打2下后可反打。穿甲硬抗。'},
+{name:'发条骑士',icon:'♟️',hp:300,atk:40,loc:'棋盘/麦斯威尔',drops:'齿轮×1-2',tip:'打3走1。做冰箱必须材料。'},
+{name:'发条主教',icon:'♗',hp:300,atk:40,loc:'棋盘/麦斯威尔',drops:'齿轮×1-2',tip:'远程闪电攻击。近身后打3走1。'},
+{name:'高脚鸟',icon:'🦅',hp:400,atk:50,loc:'矿区/草原',drops:'大肉×2',tip:'偷蛋后敌对。打2走1。夜间睡觉可偷蛋。'},
+{name:'暗影怪',icon:'👤',hp:300,atk:40,loc:'理智<30时出现',drops:'噩梦燃料',tip:'低理智才会出现。恢复理智即消失。或打2走1击杀。'},
+{name:'鱼人',icon:'🐟',hp:250,atk:30,loc:'沼泽鱼人屋',drops:'蛙腿、鱼',tip:'群体活动，靠近时全部敌对。一只只拉出来打。'},
+{name:'猪人',icon:'🐷',hp:250,atk:33,loc:'猪村',drops:'大肉、猪皮',tip:'给肉可收买(1天)。满月变疯猪(敌对但掉大量大肉+猪皮)。'},
+{name:'暴怒鸡',icon:'🦃',hp:300,atk:40,loc:'追踪可疑土堆',drops:'鸡腿×2',tip:'追土堆找到。打2走1。鸡腿做火鸡正餐。'},
+{name:'树精',icon:'🌳',hp:1500,atk:40,loc:'砍太多树后出现',drops:'活木×6',tip:'不要在基地附近砍树过多。引走或用火攻。活木做魔法材料。'},
+{name:'坎普斯(小偷)',icon:'😈',hp:300,atk:50,loc:'罪恶值过高',drops:'小偷背包(10格)',tip:'杀太多中立生物触发。打2走1。背包是稀有掉落。'},
+{name:'蚁狮',icon:'🐜',hp:6000,atk:0,loc:'夏季沙漠',drops:'沙漠石头等',tip:'夏季不喂石头会地震。定期喂1-2块石头即可。'},
+{name:'噩梦猪人',icon:'🐷',hp:350,atk:40,loc:'满月猪村',drops:'大肉×2、猪皮',tip:'满月猪人变疯猪。主动攻击但可打2走1刷猪皮。'},
+{name:'海象爸爸',icon:'🎯',hp:150,atk:33,loc:'冬季海象营地',drops:'吹箭、贝雷帽、行走手杖',tip:'远程攻击，带猎犬。追到他打2下就行。掉手杖是核心装备。'},
+{name:'石虾',icon:'🪨',hp:1350,atk:42,loc:'洞穴',drops:'石头×2、燧石×2',tip:'可喂石头收买。洞穴最强从者之一。但会跟到地上不回去。'},
+{name:'兔人',icon:'🐰',hp:200,atk:40,loc:'洞穴胡萝卜村',drops:'胡萝卜、蘑菇',tip:'靠近时若你背包有肉会敌对。给胡萝卜可收买。'},
+{name:'蠕虫',icon:'🐛',hp:900,atk:75,loc:'洞穴(周期性)',drops:'荧光果、蠕虫牙齿',tip:'洞穴噩梦周期出没。攻击高，打1走1。多人配合更容易。'},
+{name:'月石蜻蜓',icon:'🌙',hp:4000,atk:100,loc:'月岛',drops:'月石碎片',tip:'月岛特有怪物。攻击模式类似蜻蜓龙但更强。'},
+];
+
+// Init
+function init(){
+  // Characters
+  let ch='';
+  chars.forEach(c=>{
+    let diff='';for(let i=0;i<5;i++)diff+=`<span class="s ${i<c.diff?'on':''}">★</span>`;
+    ch+=`<div class="cc" onclick="this.querySelector('.cd2').classList.toggle('show')">
+    <div class="ci">${c.icon}</div><div class="cn">${c.name}</div><div class="ct">${c.title}</div>
+    <div class="cs"><span class="sh">❤️${c.hp}</span><span class="sn">🍖${c.hun}</span><span class="ss">🧠${c.san}</span></div>
+    <div class="ds">${diff}</div><div class="cd">${c.desc}</div>
+    <div class="cd2">${c.detail||''}</div></div>`;
+  });
+  document.getElementById('cg').innerHTML=ch;
+
+  // Recipes
+  let topR='',allR='';
+  recipes.forEach(r=>{
+    if(r.name.startsWith('/'))return;
+    let s=`<div class="rc"><div class="ri">${r.icon}</div><div class="rn">${r.name}</div><div class="ri2">${r.ingr||r.infr||''}</div><div class="rs"><span class="sh">${r.hun}</span>${r.hp!=='0'?`<span style="color:#e74c3c">${r.hp}</span>`:''}${r.san!=='0'?`<span class="ss">${r.san}</span>`:''}</div></div>`;
+    allR+=s;
+    if(r.top)topR+=`<div class="card"><div style="display:flex;align-items:center;gap:10px;margin-bottom:6px"><span style="font-size:1.8em">${r.icon}</span><div><h3 style="margin:0">${r.name}</h3><span style="color:var(--dim);font-size:.82em">${r.ingr||''}</span></div></div><div style="display:flex;gap:14px;font-size:.88em;margin-bottom:4px"><span class="sh">饱食${r.hun}</span>${r.hp!=='0'?`<span style="color:#e74c3c">生命${r.hp}</span>`:''}${r.san!=='0'?`<span class="ss">理智${r.san}</span>`:''}</div><p style="color:var(--dim);font-size:.84em">${r.tip||''}</p></div>`;
+  });
+  document.getElementById('tr').innerHTML=topR;
+  document.getElementById('ar').innerHTML=allR;
+
+  // Bosses
+  let bg='';
+  bosses.forEach(b=>{
+    bg+=`<div class="card"><h3>${b.icon} ${b.name}</h3>
+    <div style="display:flex;gap:12px;font-size:.85em;margin:6px 0"><span class="sh">❤️ HP:${b.hp}</span><span class="sn">⚔️ 攻:${b.atk}</span><span class="tag tag-i">${b.season}</span></div>
+    <p style="font-size:.84em"><strong>掉落：</strong>${b.drops}</p>
+    <p style="font-size:.84em;color:var(--dim)"><strong>攻略：</strong>${b.tip}</p></div>`;
+  });
+  document.getElementById('bg').innerHTML=bg;
+
+  // Mobs
+  let mg='';
+  mobs.forEach(m=>{
+    mg+=`<div class="card"><div style="display:flex;align-items:center;gap:10px"><span style="font-size:1.6em">${m.icon}</span><div><h3 style="margin:0">${m.name}</h3><span style="font-size:.78em;color:var(--dim)">${m.loc}</span></div></div>
+    <div style="display:flex;gap:12px;font-size:.82em;margin:6px 0"><span class="sh">❤️${m.hp}</span><span class="sn">⚔️${m.atk}</span></div>
+    <p style="font-size:.82em"><strong>掉落：</strong>${m.drops}</p>
+    <p style="font-size:.82em;color:var(--dim)">${m.tip}</p></div>`;
+  });
+  document.getElementById('mg').innerHTML=mg;
+  _invalidateIndex();
+}
+
+// Tab switch
+function sw(id,btn){
+  _activeTab=id;
+  document.querySelectorAll('.tc').forEach(t=>t.classList.remove('on'));
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));
+  document.getElementById('t-'+id).classList.add('on');
+  if(btn)btn.classList.add('on');
+  scrollTo({top:0,behavior:'smooth'});
+}
+
+// Search
+// Console functions
+var _activeTab='home';
+function copyCmd(btn){
+  var cmd=btn.parentElement.querySelector('.cmd-text').textContent;
+  navigator.clipboard.writeText(cmd).then(function(){showToast()});
+}
+function copyText(txt){
+  navigator.clipboard.writeText(txt).then(function(){showToast()});
+}
+function showToast(){
+  var t=document.getElementById('copyToast');
+  t.style.display='block';
+  setTimeout(function(){t.style.display='none'},1500);
+}
+function filterConsole(q){
+  q=q.trim().toLowerCase();
+  var cats=document.getElementById('conCats');
+  var catBtn=cats.querySelector('.con-cat-btn.on');
+  var catVal=catBtn?(catBtn.dataset.cat||'all'):'all';
+  document.querySelectorAll('#conList .con-cmd').forEach(function(c){
+    var txt=(c.querySelector('.cmd-text').textContent+' '+c.querySelector('.cmd-desc').textContent+' '+(c.dataset.search||'')).toLowerCase();
+    var searchMatch=!q||txt.indexOf(q)!==-1;
+    var cmdCat=c.dataset.cat||'';
+    var catOK=catVal==='all'||cmdCat===catVal;
+    c.style.display=(searchMatch&&catOK)?'':'none';
+  });
+  // Show/hide section headers based on visible children
+  document.querySelectorAll('#conList h3[data-cat]').forEach(function(h){
+    var cat=h.dataset.cat;
+    var hasVisible=false;
+    var sib=h.nextElementSibling;
+    while(sib){
+      if(sib.tagName==='H3')break;
+      if(sib.classList.contains('con-cmd')&&sib.style.display!=='none')hasVisible=true;
+      sib=sib.nextElementSibling;
+    }
+    h.style.display=hasVisible?'':'none';
+  });
+}
+function filterCat(cat,btn){
+  document.querySelectorAll('.con-cat-btn').forEach(function(b){b.classList.remove('on')});
+  btn.classList.add('on');
+  // Reset console search
+  document.getElementById('conSearch').value='';
+  document.querySelectorAll('#conList .con-cmd').forEach(function(c){
+    var cmdCat=c.dataset.cat||'';
+    c.style.display=(cat==='all'||cmdCat===cat)?'':'none';
+  });
+  document.querySelectorAll('#conList h3[data-cat]').forEach(function(h){
+    var hCat=h.dataset.cat;
+    h.style.display=(cat==='all'||hCat===cat)?'':'none';
+  });
+}
+
+var _searchResults=[];
+var _tabMap={'t-home':'🏠 首页','t-chars':'👤 角色','t-surv':'🌿 生存','t-food':'🍖 食物','t-mobs':'👹 怪物','t-seasons':'🍂 季节','t-craft':'🔨 制作','t-world':'🌊 探索','t-console':'⌨️ 控制台'};
+var _tabIds=['t-home','t-chars','t-surv','t-food','t-mobs','t-seasons','t-craft','t-world','t-console'];
+var _debounceTimer=null;
+function _debounceSearch(q){clearTimeout(_debounceTimer);_debounceTimer=setTimeout(function(){doSearch(q)},150)}
+function _searchKey(e){
+  if(e.key==='Escape'){document.getElementById('searchPanel').style.display='none';document.getElementById('gs').blur()}
+  if(e.key==='Enter'&&_searchResults.length>0){
+    e.preventDefault();
+    var first=document.querySelector('.sr-item[data-idx="0"]');
+    if(first)first.click();
+  }
+}
+
+function _escapeHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+
+function _getSnippet(text,q){
+  var lo=text.toLowerCase(),idx=lo.indexOf(q);
+  if(idx===-1)return text.substring(0,100);
+  var s=Math.max(0,idx-40),e=Math.min(text.length,idx+q.length+60);
+  var sn=text.substring(s,e).replace(/\s+/g,' ').trim();
+  return(s>0?'…':'')+sn+(e<text.length?'…':'');
+}
+
+function _highlight(text,q){
+  var esc=q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+  return _escapeHtml(text).replace(new RegExp('('+esc+')','gi'),'<mark>$1</mark>');
+}
+
+function _buildIndex(){
+  var items=[];
+  _tabIds.forEach(function(tabId){
+    var tab=document.getElementById(tabId);
+    if(!tab)return;
+    var tabName=_tabMap[tabId]||tabId;
+    // cards
+    tab.querySelectorAll('.card').forEach(function(el){
+      var txt=el.textContent.replace(/\s+/g,' ').trim();
+      var titleEl=el.querySelector('h3,h4');
+      var title=titleEl?titleEl.textContent.trim():txt.substring(0,40);
+      items.push({tabId:tabId,tabName:tabName,title:title,text:txt,el:el});
+    });
+    // table rows (skip header)
+    tab.querySelectorAll('.tb tr, .spawn-table tr').forEach(function(tr,i){
+      if(i===0||tr.querySelector('th'))return;
+      var txt=tr.textContent.replace(/\s+/g,' ').trim();
+      var cells=tr.querySelectorAll('td');
+      var title=cells.length>1?cells[1].textContent.trim():txt.substring(0,40);
+      items.push({tabId:tabId,tabName:tabName,title:title,text:txt,el:tr});
+    });
+    // character/mob/food list items (.cc = character cards rendered by init)
+    tab.querySelectorAll('.cc, .rc').forEach(function(el){
+      var txt=el.textContent.replace(/\s+/g,' ').trim();
+      var titleEl=el.querySelector('.cn,.rn');
+      var title=titleEl?titleEl.textContent.trim():txt.substring(0,40);
+      items.push({tabId:tabId,tabName:tabName,title:title,text:txt,el:el});
+    });
+    // skip .con-cmd here — handled separately in doSearch()
+  });
+  return items;
+}
+// Rebuild index whenever dynamic content changes
+function _invalidateIndex(){_searchIndex=null}
+
+var _searchIndex=null;
+function _ensureIndex(){if(!_searchIndex)_searchIndex=_buildIndex();return _searchIndex}
+
+function doSearch(q){
+  q=q.trim().toLowerCase();
+  var panel=document.getElementById('searchPanel');
+  var nbs=document.querySelectorAll('.nb');
+
+  if(!q){
+    panel.style.display='none';
+    _tabIds.forEach(function(id){document.getElementById(id).classList.remove('on')});
+    document.getElementById('t-'+_activeTab).classList.add('on');
+    nbs.forEach(function(b,i){b.classList.toggle('on',_tabIds[i]==='t-'+_activeTab)});
+    return;
+  }
+
+  var idx=_ensureIndex();
+  var results=[];
+  var seen=new Set();
+  idx.forEach(function(item){
+    if(item.text.toLowerCase().indexOf(q)!==-1){
+      var key=item.tabId+'|'+item.title;
+      if(!seen.has(key)){seen.add(key);results.push(item)}
+    }
+  });
+
+  // Also search console commands specifically
+  document.querySelectorAll('#conList .con-cmd').forEach(function(c){
+    var txt=(c.querySelector('.cmd-text').textContent+' '+c.querySelector('.cmd-desc').textContent+' '+(c.dataset.search||'')).toLowerCase();
+    if(txt.indexOf(q)!==-1){
+      var title=c.querySelector('.cmd-text').textContent.trim();
+      var key='t-console|'+title;
+      if(!seen.has(key)){seen.add(key);results.push({tabId:'t-console',tabName:_tabMap['t-console'],title:title,text:c.textContent.replace(/\s+/g,' ').trim(),el:c})}
+    }
+  });
+
+  _searchResults=results;
+
+  // Render panel
+  if(results.length===0){
+    panel.innerHTML='<div class="sr-empty">🔍 未找到「<b>'+_escapeHtml(q)+'</b>」相关内容</div>';
+  }else{
+    var h='<div class="sr-header">找到 <b>'+results.length+'</b> 个结果</div>';
+    var max=Math.min(results.length,30);
+    for(var i=0;i<max;i++){
+      var r=results[i];
+      var snippet=_highlight(_getSnippet(r.text,q),q);
+      var title=_highlight(r.title,q);
+      h+='<div class="sr-item" data-idx="'+i+'">'
+        +'<div class="sr-meta"><span class="sr-tab">'+_escapeHtml(r.tabName)+'</span><span class="sr-title">'+title+'</span></div>'
+        +'<div class="sr-snippet">'+snippet+'</div>'
+        +'</div>';
+    }
+    if(results.length>max)h+='<div class="sr-empty">…还有 '+(results.length-max)+' 个结果，请缩小搜索范围</div>';
+    panel.innerHTML=h;
+  }
+  panel.style.display='block';
+}
+
+// Click result → jump to element
+document.addEventListener('click',function(e){
+  var item=e.target.closest('.sr-item');
+  if(item&&_searchResults.length){
+    var idx=parseInt(item.dataset.idx);
+    var r=_searchResults[idx];
+    if(!r)return;
+    // Switch tab
+    _tabIds.forEach(function(id){document.getElementById(id).classList.remove('on')});
+    document.getElementById(r.tabId).classList.add('on');
+    document.querySelectorAll('.nb').forEach(function(b,i){b.classList.toggle('on',_tabIds[i]===r.tabId)});
+    _activeTab=r.tabId.replace('t-','');
+    // Close panel
+    document.getElementById('searchPanel').style.display='none';
+    // Scroll to element + highlight
+    setTimeout(function(){
+      r.el.scrollIntoView({behavior:'smooth',block:'center'});
+      r.el.style.outline='3px solid '+getComputedStyle(document.documentElement).getPropertyValue('--gold');
+      r.el.style.outlineOffset='3px';
+      r.el.style.transition='outline .3s';
+      setTimeout(function(){r.el.style.outline='';r.el.style.outlineOffset=''},2500);
+    },100);
+  }
+  // Click outside search → close panel
+  if(!e.target.closest('.search-w')){
+    document.getElementById('searchPanel').style.display='none';
+  }
+});
+
+// Back to top
+window.addEventListener('scroll',()=>{
+  document.getElementById('btt').classList.toggle('show',scrollY>400);
+});
+
+init();
+</script>
+</body>
+</html>
