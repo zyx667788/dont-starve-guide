@@ -1121,59 +1121,230 @@
     <section class="page-section" id="sec-product">
         <div class="container" style="padding-top:32px;">
             <h2 class="section-title">AI产品</h2>
-            <p style="color:var(--text-secondary);font-size:15px;margin-bottom:8px;">追踪全球最新AI产品发布与更新</p>
-            <div class="product-grid">
-                <div class="product-card">
+            <p style="color:var(--text-secondary);font-size:15px;margin-bottom:20px;">追踪全球最新AI大模型与生成式AI产品</p>
+
+            <!-- 筛选标签 -->
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px">
+                <button class="product-filter active" onclick="filterProduct('all',this)">全部</button>
+                <button class="product-filter" onclick="filterProduct('llm',this)">🧠 语言大模型</button>
+                <button class="product-filter" onclick="filterProduct('video',this)">🎬 视频生成</button>
+                <button class="product-filter" onclick="filterProduct('image',this)">🎨 图像生成</button>
+            </div>
+
+            <div class="product-grid" id="productGrid">
+
+                <!-- ===== 🧠 语言大模型 ===== -->
+                <div class="product-card" data-cat="llm">
+                    <span class="product-card-badge hot">热门</span>
+                    <div class="product-icon">🧠</div>
+                    <h3 class="product-name">GPT-5</h3>
+                    <div class="product-company">OpenAI</div>
+                    <p class="product-desc">OpenAI 旗舰大模型，支持原生多模态（文本/图像/音频/视频），200万token上下文窗口。推理能力较GPT-4o提升50%，支持实时语音对话与视觉理解。</p>
+                    <div class="product-stats"><span>📅 2026.05</span><span>🔥 热度 99</span><span>💰 $15/M tokens</span></div>
+                </div>
+
+                <div class="product-card" data-cat="llm">
+                    <span class="product-card-badge hot">热门</span>
+                    <div class="product-icon">🔮</div>
+                    <h3 class="product-name">Claude Opus 4</h3>
+                    <div class="product-company">Anthropic</div>
+                    <p class="product-desc">Anthropic 最强推理模型，200K上下文窗口。在复杂推理、代码生成、长文档分析上表现顶尖。支持扩展思考(Extended Thinking)模式，可自主搜索网页。</p>
+                    <div class="product-stats"><span>📅 2026.05</span><span>🔥 热度 97</span><span>💰 $15/M tokens</span></div>
+                </div>
+
+                <div class="product-card" data-cat="llm">
+                    <span class="product-card-badge hot">热门</span>
+                    <div class="product-icon">🌟</div>
+                    <h3 class="product-name">Gemini 2.5 Pro</h3>
+                    <div class="product-company">Google DeepMind</div>
+                    <p class="product-desc">Google 最强多模态模型，100万token超长上下文。原生支持文本/图像/音频/视频/代码理解，在编程和数学基准测试中名列前茅。</p>
+                    <div class="product-stats"><span>📅 2026.03</span><span>🔥 热度 96</span><span>💰 $10/M tokens</span></div>
+                </div>
+
+                <div class="product-card" data-cat="llm">
+                    <span class="product-card-badge new">新发布</span>
+                    <div class="product-icon">🐋</div>
+                    <h3 class="product-name">DeepSeek-V4</h3>
+                    <div class="product-company">深度求索 DeepSeek</div>
+                    <p class="product-desc">国产开源旗舰大模型，MoE架构，671B参数。在数学推理和代码能力上媲美GPT-5，API价格仅为GPT-5的1/10，极致性价比。</p>
+                    <div class="product-stats"><span>📅 2026.04</span><span>🔥 热度 95</span><span>💰 ¥2/M tokens</span></div>
+                </div>
+
+                <div class="product-card" data-cat="llm">
                     <span class="product-card-badge hot">热门</span>
                     <div class="product-icon">🤖</div>
-                    <h3 class="product-name">Spot 3.0</h3>
-                    <div class="product-company">Boston Dynamics</div>
-                    <p class="product-desc">波士顿动力最新四足机器人，集成先进AI视觉和自主导航能力，面向工业巡检和仓储物流场景。</p>
-                    <div class="product-stats"><span>📅 2026.06.20</span><span>🔥 热度 96</span></div>
+                    <h3 class="product-name">Grok-4</h3>
+                    <div class="product-company">xAI</div>
+                    <p class="product-desc">马斯克旗下xAI的旗舰模型，原生集成X/Twitter实时数据流。支持256K上下文，在创意写作和实时信息检索上独具优势。</p>
+                    <div class="product-stats"><span>📅 2026.04</span><span>🔥 热度 92</span><span>💰 $10/M tokens</span></div>
                 </div>
-                <div class="product-card">
+
+                <div class="product-card" data-cat="llm">
                     <span class="product-card-badge update">更新</span>
-                    <div class="product-icon">💬</div>
-                    <h3 class="product-name">ChatGPT Enterprise</h3>
-                    <div class="product-company">OpenAI</div>
-                    <p class="product-desc">新增支出控制和用量分析功能，支持部门级用量追踪、预算告警和详细使用报表，优化企业AI成本管理。</p>
-                    <div class="product-stats"><span>📅 2026.06.19</span><span>🔥 热度 94</span></div>
+                    <div class="product-icon">📚</div>
+                    <h3 class="product-name">GLM-5</h3>
+                    <div class="product-company">智谱 AI</div>
+                    <p class="product-desc">智谱最新一代大模型，中英文双语能力顶尖。支持Agent自主规划、工具调用和多轮复杂任务执行，在国内大模型评测中持续领先。</p>
+                    <div class="product-stats"><span>📅 2026.05</span><span>🔥 热度 89</span><span>💰 ¥5/M tokens</span></div>
                 </div>
-                <div class="product-card">
+
+                <div class="product-card" data-cat="llm">
+                    <span class="product-card-badge update">更新</span>
+                    <div class="product-icon">🌊</div>
+                    <h3 class="product-name">Kimi K2</h3>
+                    <div class="product-company">月之暗面 Moonshot AI</div>
+                    <p class="product-desc">万亿参数MoE架构，原生长上下文专家。支持200万token输入，在长文档理解、多轮对话一致性上表现突出。搜索增强能力强。</p>
+                    <div class="product-stats"><span>📅 2026.05</span><span>🔥 热度 88</span><span>💰 ¥8/M tokens</span></div>
+                </div>
+
+                <div class="product-card" data-cat="llm">
                     <span class="product-card-badge new">新发布</span>
-                    <div class="product-icon">☁️</div>
-                    <h3 class="product-name">OVHcloud AI Platform</h3>
-                    <div class="product-company">OVHcloud</div>
-                    <p class="product-desc">欧洲本土AI云平台，提供前沿大模型训练和推理服务，支持Mistral等欧洲AI模型，降低对美国云依赖。</p>
-                    <div class="product-stats"><span>📅 2026.06.18</span><span>🔥 热度 87</span></div>
+                    <div class="product-icon">🦉</div>
+                    <h3 class="product-name">Qwen-3</h3>
+                    <div class="product-company">阿里云 通义千问</div>
+                    <p class="product-desc">阿里最新大模型，支持文本/图像/音频/视频全模态。MoE架构高效推理，开源版本Qwen-3-235B在多项基准测试上超越同规模闭源模型。</p>
+                    <div class="product-stats"><span>📅 2026.04</span><span>🔥 热度 87</span><span>💰 ¥4/M tokens</span></div>
                 </div>
-                <div class="product-card">
-                    <span class="product-card-badge new">新发布</span>
-                    <div class="product-icon">🔍</div>
-                    <h3 class="product-name">Aikido Code Audit</h3>
-                    <div class="product-company">Aikido Security</div>
-                    <p class="product-desc">AI驱动的代码安全审计工具，利用AI自动发现代码库中隐藏的复杂安全漏洞，提升开发团队安全效率。</p>
-                    <div class="product-stats"><span>📅 2026.06.19</span><span>🔥 热度 82</span></div>
-                </div>
-                <div class="product-card">
+
+                <!-- ===== 🎬 视频生成模型 ===== -->
+                <div class="product-card" data-cat="video">
                     <span class="product-card-badge hot">热门</span>
-                    <div class="product-icon">🛒</div>
-                    <h3 class="product-name">AI Shopping Assistant</h3>
-                    <div class="product-company">PYMNTS</div>
-                    <p class="product-desc">新一代AI购物助手，采用陪伴式而非代替式设计理念，帮助消费者在购物决策中获得AI辅助。</p>
-                    <div class="product-stats"><span>📅 2026.06.19</span><span>🔥 热度 85</span></div>
+                    <div class="product-icon">🎬</div>
+                    <h3 class="product-name">Sora</h3>
+                    <div class="product-company">OpenAI</div>
+                    <p class="product-desc">OpenAI文生视频旗舰产品，支持生成最长60秒、1080p高质量视频。物理世界模拟能力强，支持图生视频、视频编辑和风格迁移。</p>
+                    <div class="product-stats"><span>📅 2026.02</span><span>🔥 热度 98</span><span>💰 $20/月(Plus)</span></div>
                 </div>
-                <div class="product-card">
+
+                <div class="product-card" data-cat="video">
+                    <span class="product-card-badge hot">热门</span>
+                    <div class="product-icon">🎥</div>
+                    <h3 class="product-name">Veo 3</h3>
+                    <div class="product-company">Google DeepMind</div>
+                    <p class="product-desc">Google最新视频生成模型，原生支持音频同步生成（对话、音效、背景音乐）。支持4K分辨率、最长3分钟视频，物理运动一致性业界领先。</p>
+                    <div class="product-stats"><span>📅 2026.05</span><span>🔥 热度 96</span><span>💰 Google AI Ultra</span></div>
+                </div>
+
+                <div class="product-card" data-cat="video">
                     <span class="product-card-badge new">新发布</span>
-                    <div class="product-icon">✈️</div>
-                    <h3 class="product-name">Mistral for Aerospace</h3>
-                    <div class="product-company">Airbus × Mistral AI</div>
-                    <p class="product-desc">Airbus与Mistral AI联合打造的航空航天专用AI平台，支持主权航空应用的智能化升级。</p>
-                    <div class="product-stats"><span>📅 2026.06.18</span><span>🔥 热度 83</span></div>
+                    <div class="product-icon">🎞️</div>
+                    <h3 class="product-name">可灵 2.0 (Kling)</h3>
+                    <div class="product-company">快手</div>
+                    <p class="product-desc">国产视频生成标杆，支持文生视频/图生视频/视频续写。运动幅度大、人物一致性好，支持1080p、最长2分钟。在复杂运动场景上表现优异。</p>
+                    <div class="product-stats"><span>📅 2026.04</span><span>🔥 热度 94</span><span>💰 ¥66/月</span></div>
                 </div>
+
+                <div class="product-card" data-cat="video">
+                    <span class="product-card-badge hot">热门</span>
+                    <div class="product-icon">🎭</div>
+                    <h3 class="product-name">Runway Gen-4</h3>
+                    <div class="product-company">Runway</div>
+                    <p class="product-desc">专业级AI视频生成工具，支持角色一致性、场景控制和精确运镜。被好莱坞广泛采用，支持视频风格迁移和局部编辑。</p>
+                    <div class="product-stats"><span>📅 2026.03</span><span>🔥 热度 93</span><span>💰 $28/月(Standard)</span></div>
+                </div>
+
+                <div class="product-card" data-cat="video">
+                    <span class="product-card-badge update">更新</span>
+                    <div class="product-icon">🎨</div>
+                    <h3 class="product-name">Pika 3.0</h3>
+                    <div class="product-company">Pika Labs</div>
+                    <p class="product-desc">创意视频生成工具，支持文字/图片/视频转视频。特色功能：特效模板、口型同步、3D动画风格转换，适合社交媒体短视频创作。</p>
+                    <div class="product-stats"><span>📅 2026.05</span><span>🔥 热度 88</span><span>💰 $10/月</span></div>
+                </div>
+
+                <div class="product-card" data-cat="video">
+                    <span class="product-card-badge new">新发布</span>
+                    <div class="product-icon">🌌</div>
+                    <h3 class="product-name">Hailuo MiniMax</h3>
+                    <div class="product-company">MiniMax 稀宇科技</div>
+                    <p class="product-desc">海螺AI视频生成，支持文生视频和图生视频。在人物表情、自然运动上表现突出，生成速度快。支持720p、10秒高质量视频。</p>
+                    <div class="product-stats"><span>📅 2026.04</span><span>🔥 热度 86</span><span>💰 免费体验</span></div>
+                </div>
+
+                <!-- ===== 🎨 图像生成模型 ===== -->
+                <div class="product-card" data-cat="image">
+                    <span class="product-card-badge hot">热门</span>
+                    <div class="product-icon">🎨</div>
+                    <h3 class="product-name">GPT-4o Image</h3>
+                    <div class="product-company">OpenAI</div>
+                    <p class="product-desc">GPT-4o原生图像生成能力，支持文字渲染、精确指令遵循、多轮编辑。可在对话中直接生成/修改图片，支持透明背景和多种风格。</p>
+                    <div class="product-stats"><span>📅 2026.03</span><span>🔥 热度 98</span><span>💬 ChatGPT内置</span></div>
+                </div>
+
+                <div class="product-card" data-cat="image">
+                    <span class="product-card-badge hot">热门</span>
+                    <div class="product-icon">🖼️</div>
+                    <h3 class="product-name">Midjourney V7</h3>
+                    <div class="product-company">Midjourney</div>
+                    <p class="product-desc">AI图像生成标杆产品，V7版本在细节真实感、光影效果和构图美学上达到新高度。支持图像编辑、风格混合和3D场景生成。</p>
+                    <div class="product-stats"><span>📅 2026.04</span><span>🔥 热度 97</span><span>💰 $10/月(基础)</span></div>
+                </div>
+
+                <div class="product-card" data-cat="image">
+                    <span class="product-card-badge hot">热门</span>
+                    <div class="product-icon">✨</div>
+                    <h3 class="product-name">Imagen 4</h3>
+                    <div class="product-company">Google DeepMind</div>
+                    <p class="product-desc">Google最新文生图模型，在文字渲染、照片写实和艺术风格上全面领先。支持图像编辑、超分辨率和多图融合，集成在Gemini中使用。</p>
+                    <div class="product-stats"><span>📅 2026.05</span><span>🔥 热度 95</span><span>💬 Gemini内置</span></div>
+                </div>
+
+                <div class="product-card" data-cat="image">
+                    <span class="product-card-badge new">新发布</span>
+                    <div class="product-icon">🖌️</div>
+                    <h3 class="product-name">FLUX 2 Pro</h3>
+                    <div class="product-company">Black Forest Labs</div>
+                    <p class="product-desc">开源图像生成模型的天花板，12B参数。在细节真实感、文字渲染和指令遵循上媲美闭源产品。支持ControlNet、LoRA微调和本地部署。</p>
+                    <div class="product-stats"><span>📅 2026.04</span><span>🔥 热度 94</span><span>💰 开源免费</span></div>
+                </div>
+
+                <div class="product-card" data-cat="image">
+                    <span class="product-card-badge new">新发布</span>
+                    <div class="product-icon">🌈</div>
+                    <h3 class="product-name">即梦 AI (Dreamina)</h3>
+                    <div class="product-company">字节跳动</div>
+                    <p class="product-desc">国产AI图像生成平台，支持文生图/图生图/图像编辑。中文理解能力强，内置丰富的风格模板和LoRA模型，适合国内用户创作。</p>
+                    <div class="product-stats"><span>📅 2026.03</span><span>🔥 热度 90</span><span>💰 免费+付费</span></div>
+                </div>
+
+                <div class="product-card" data-cat="image">
+                    <span class="product-card-badge update">更新</span>
+                    <div class="product-icon">🔥</div>
+                    <h3 class="product-name">Stable Diffusion 4</h3>
+                    <div class="product-company">Stability AI</div>
+                    <p class="product-desc">开源图像生成社区的基石，SD4在图像质量和生成速度上大幅提升。支持ControlNet/IP-Adapter/LoRA等丰富生态，本地部署首选。</p>
+                    <div class="product-stats"><span>📅 2026.05</span><span>🔥 热度 92</span><span>💰 开源免费</span></div>
+                </div>
+
             </div>
         </div>
     </section>
+
+    <style>
+        .product-filter {
+            padding: 6px 16px; border-radius: 20px; border: 1px solid var(--border);
+            background: var(--bg-card); color: var(--text-secondary); cursor: pointer;
+            font-size: 13px; transition: all 0.2s;
+        }
+        .product-filter.active, .product-filter:hover {
+            border-color: var(--brand); color: var(--brand); background: rgba(212,98,42,.08);
+        }
+        .product-card[data-cat].hidden { display: none; }
+    </style>
+
+    <script>
+    function filterProduct(cat, btn) {
+        document.querySelectorAll('.product-filter').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.querySelectorAll('.product-card[data-cat]').forEach(card => {
+            if (cat === 'all' || card.dataset.cat === cat) {
+                card.classList.remove('hidden');
+            } else {
+                card.classList.add('hidden');
+            }
+        });
+    }
+    </script>
 
     <!-- ==================== 研究 ==================== -->
     <section class="page-section" id="sec-research">
