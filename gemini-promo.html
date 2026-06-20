@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1440,height=900">
+<title>Gemini AI — Intelligence for Everyone</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:#0A0A1A;font-family:'Google Sans','Segoe UI',-apple-system,sans-serif}
+canvas{display:block;position:absolute;top:0;left:0}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<script>
+// ─── Google Gemini Colors ───
+const BLUE   = '#4285F4';
+const YELLOW = '#FBBC05';
+const GREEN  = '#34A853';
+const RED    = '#EA4335';
+const COLORS = [BLUE, YELLOW, GREEN, RED];
+const WHITE  = '#FFFFFF';
+const BG     = '#0A0A1A';
+
+// ─── Canvas Setup ───
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+let W, H, CX, CY;
+function resize() {
+  const dpr = window.devicePixelRatio || 1;
+  W = 1440; H = 900;
+  canvas.width = W * dpr;
+  canvas.height = H * dpr;
+  canvas.style.width = W + 'px';
+  canvas.style.height = H + 'px';
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  CX = W / 2; CY = H / 2;
+}
+resize();
+
+// ─── Easing Functions ───
+function expoOut(t) { return t >= 1 ? 1 : 1 - Math.pow(2, -10 * t); }
+function expoIn(t) { return t <= 0 ? 0 : Math.pow(2, 10 * (t - 1)); }
+function overshoot(t) {
+  const c1 = 1.70158, c3 = c1 + 1;
+  return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
+}
+function spring(t) {
+  const c4 = (2 * Math.PI) / 3;
+  return t === 0 ? 0 : t === 1 ? 1 : Math.pow(2, -10 * t) * Math.sin((t * 10 - 0.75) * c4) + 1;
+}
+function clamp01(v) { return Math.max(0, Math.min(1, v)); }
+function lerp(a, b, t) { return a + (b - a) * t; }
+function parseColor(c) {
+  if (c.startsWith('#')) {
+    return [parseInt(c.slice(1,3),16), parseInt(c.slice(3,5),16), parseInt(c.slice(5,7),16)];
+  }
+  const m = c.match(/rgb\((\d+),(\d+),(\d+)\)/);
+  if (m) return [parseInt(m[1]), parseInt(m[2]), parseInt(m[3])];
+  return [0,0,0];
+}
+function colorLerp(c1, c2, t) {
+  const [r1,g1,b1] = parseColor(c1);
+  const [r2,g2,b2] = parseColor(c2);
+  const r = Math.round(lerp(r1,r2,t)), g = Math.round(lerp(g1,g2,t)), b = Math.round(lerp(b1,b2,t));
+  return `rgb(${r},${g},${b})`;
+}
+
+// ─── Particle System ───
+class Particle {
+  constructor(x, y, color, speed, life, size) {
+    this.x = x; this.y = y;
+    this.color = color;
+    this.vx = (Math.random() - 0.5) * speed;
+    this.vy = (Math.random() - 0.5) * speed;
+    this.life = life;
+    this.maxLife = life;
+    this.size = size || 2;
+  }
+  update(dt) {
+    this.x += this.vx * dt;
+    this.y += this.vy * dt;
+    this.life -= dt;
+  }
+  draw(ctx) {
+    const a = clamp01(this.life / this.maxLife);
+    ctx.globalAlpha = a * 0.7;
+    ctx.fillStyle = this.color;
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size * a, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  get dead() { return this.life <= 0; }
+}
+
+let particles = [];
+function spawnParticles(x, y, color, count, speed, life, size) {
+  for (let i = 0; i < count; i++) {
+    particles.push(new Particle(x, y, color, speed, life, size));
+  }
+}
+
+// ─── Sparkle System ───
+class Sparkle {
+  constructor(x, y, size, color, delay) {
+    this.x = x; this.y = y;
+    this.size = size;
+    this.color = color;
+    this.delay = delay;
+    this.rotation = Math.random() * Math.PI * 2;
+    this.rotSpeed = (Math.random() - 0.5) * 2;
+  }
+  draw(ctx, t) {
+    if (t < this.delay) return;
+    const lt = clamp01((t - this.delay) * 2);
+    const a = lt < 0.5 ? lt * 2 : 1;
+    const s = this.size * overshoot(clamp01(lt));
+    ctx.save();
+    ctx.translate(this.x, this.y);
+    ctx.rotate(this.rotation + this.rotSpeed * (t - this.delay));
+    ctx.globalAlpha = a * 0.9;
+    ctx.fillStyle = this.color;
+    drawStar(ctx, 0, 0, s, s * 0.4, 4);
+    ctx.restore();
+  }
+}
+
+function drawStar(ctx, cx, cy, outerR, innerR, points) {
+  ctx.beginPath();
+  for (let i = 0; i < points * 2; i++) {
+    const r = i % 2 === 0 ? outerR : innerR;
+    const angle = (i * Math.PI) / points - Math.PI / 2;
+    const x = cx + Math.cos(angle) * r;
+    const y = cy + Math.sin(angle) * r;
+    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  }
+  ctx.closePath();
+  ctx.fill();
+}
+
+// ─── Gemini Astroid (concave 4-pointed star) ───
+function drawGeminiAstroid(ctx, cx, cy, size) {
+  ctx.beginPath();
+  // 4 cusps at top, right, bottom, left with concave curves
+  const steps = 80;
+  for (let i = 0; i <= steps; i++) {
+    const t = (i / steps) * Math.PI * 2;
+    // Astroid parametric: x = cos³(t), y = sin³(t)
+    const x = cx + size * Math.pow(Math.cos(t), 3);
+    const y = cy + size * Math.pow(Math.sin(t), 3);
+    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  }
+  ctx.closePath();
+}
+
+// ─── Floating Sparkle for ambient ───
+let ambientSparkles = [];
+function initAmbientSparkles() {
+  ambientSparkles = [];
+  for (let i = 0; i < 20; i++) {
+    ambientSparkles.push({
+      x: Math.random() * W,
+      y: Math.random() * H,
+      size: 2 + Math.random() * 4,
+      phase: Math.random() * Math.PI * 2,
+      speed: 0.5 + Math.random() * 1.5,
+      color: COLORS[Math.floor(Math.random() * 4)]
+    });
+  }
+}
+initAmbientSparkles();
+
+// ─── Capability Cards Data ───
+const chatMessages = [
+  { text: "What is quantum computing?", isUser: true },
+  { text: "Quantum computing uses qubits that exist in superposition, enabling parallel computation on problems that are intractable for classical computers.", isUser: false }
+];
+
+const codeLines = [
+  'def fibonacci(n):',
+  '    if n <= 1:',
+  '        return n',
+  '    a, b = 0, 1',
+  '    for _ in range(2, n+1):',
+  '        a, b = b, a + b',
+  '    return b',
+  '',
+  '# Gemini optimized ✓',
+  'print(fibonacci(50))'
+];
+
+const dataPoints = [
+  [0.2, 0.4, 0.3, 0.6, 0.8, 0.7, 0.9, 1.0, 0.85, 0.95],
+  [0.1, 0.3, 0.5, 0.4, 0.6, 0.8, 0.7, 0.85, 0.9, 0.92]
+];
+
+// ─── State Tracking ───
+let lastTick = null;
+let animTime = 0;
+const DURATION = 20;
+
+// ─── Draw Helpers ───
+function drawGlowCircle(ctx, x, y, r, color, blur) {
+  ctx.save();
+  ctx.shadowColor = color;
+  ctx.shadowBlur = blur || 40;
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.arc(x, y, r, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+}
+
+function drawRoundedRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+}
+
+function drawSparkleIcon(ctx, x, y, size, color, alpha) {
+  ctx.save();
+  ctx.globalAlpha = alpha;
+  // Gemini official gradient: top=red, right=blue, bottom=green, left=yellow
+  const g = ctx.createLinearGradient(x, y - size, x + size, y);
+  g.addColorStop(0, RED);
+  g.addColorStop(0.33, BLUE);
+  g.addColorStop(0.66, GREEN);
+  g.addColorStop(1, YELLOW);
+  ctx.fillStyle = g;
+  drawGeminiAstroid(ctx, x, y, size);
+  ctx.fill();
+  ctx.restore();
+}
+
+// ─── Helper: Phase fade in/out ───
+function phaseAlpha(t, start, fadeInStart, fadeInEnd, fadeOutStart, fadeOutEnd) {
+  if (t < start) return 0;
+  if (t < fadeInEnd) return clamp01((t - fadeInStart) / (fadeInEnd - fadeInStart));
+  if (t < fadeOutStart) return 1;
+  if (t < fadeOutEnd) return 1 - clamp01((t - fadeOutStart) / (fadeOutEnd - fadeOutStart));
+  return 0;
+}
+
+// ─── Main Render ───
+function render(t) {
+  // Clear
+  ctx.globalAlpha = 1;
+  ctx.fillStyle = BG;
+  ctx.fillRect(0, 0, W, H);
+
+  // Background gradient atmosphere
+  const bgGrad = ctx.createRadialGradient(CX, CY, 0, CX, CY, 600);
+  bgGrad.addColorStop(0, `rgba(66, 133, 244, 0.06)`);
+  bgGrad.addColorStop(0.5, `rgba(26, 26, 46, 0.04)`);
+  bgGrad.addColorStop(1, 'transparent');
+  ctx.fillStyle = bgGrad;
+  ctx.fillRect(0, 0, W, H);
+
+  // Ambient sparkles (always visible after 0.5s)
+  if (t > 0.5) {
+    const sparkAlpha = clamp01((t - 0.5) / 2);
+    ambientSparkles.forEach(s => {
+      const pulse = 0.4 + 0.6 * Math.sin(t * s.speed + s.phase);
+      ctx.save();
+      ctx.globalAlpha = sparkAlpha * pulse * 0.5;
+      ctx.translate(s.x, s.y + Math.sin(t * 0.3 + s.phase) * 10);
+      ctx.rotate(t * 0.5 + s.phase);
+      ctx.fillStyle = s.color;
+      drawStar(ctx, 0, 0, s.size * pulse, s.size * pulse * 0.3, 4);
+      ctx.restore();
+    });
+  }
+
+  // ══════════════════════════════════════════════════
+  // S1: TRIGGER (0-3s) — Slow
+  // Fade in: 0-0.5s, Hold: 0.5-2.5s, Fade out: 2.5-3s
+  // ══════════════════════════════════════════════════
+  const s1Alpha = phaseAlpha(t, 0, 0, 0.5, 2.5, 3);
+  if (s1Alpha > 0) {
+    const s1t = clamp01(t / 3);
+    const circleScale = expoOut(s1t);
+    const pulse = 1 + 0.05 * Math.sin(t * 3);
+    const baseR = 60 * circleScale * pulse;
+
+    // Main gradient circle
+    const grad = ctx.createRadialGradient(CX, CY, 0, CX, CY, baseR * 2);
+    grad.addColorStop(0, BLUE);
+    grad.addColorStop(0.6, colorLerp(BLUE, BG, 0.3));
+    grad.addColorStop(1, 'transparent');
+
+    ctx.save();
+    ctx.globalAlpha = s1Alpha * clamp01(s1t * 1.5);
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.arc(CX, CY, baseR * 2, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+
+    // Inner bright circle
+    ctx.save();
+    ctx.globalAlpha = s1Alpha;
+    drawGlowCircle(ctx, CX, CY, baseR * 0.7, BLUE, 60 * circleScale);
+    ctx.restore();
+
+    // S1 particles
+    if (s1t > 0.3 && t < 2.8) {
+      const pRate = Math.floor(2 + s1t * 3);
+      for (let i = 0; i < pRate; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const dist = baseR * (1 + Math.random());
+        spawnParticles(
+          CX + Math.cos(angle) * dist,
+          CY + Math.sin(angle) * dist,
+          COLORS[Math.floor(Math.random() * 4)],
+          40, 2 + Math.random(), 1.5
+        );
+      }
+    }
+  }
+
+  // ══════════════════════════════════════════════════
+  // S2: GENERATION (3-7s) — Medium
+  // Fade in: 3-3.5s, Hold: 3.5-6s, Fade out: 6-7s
+  // ══════════════════════════════════════════════════
+  const s2Alpha = phaseAlpha(t, 3, 3, 3.5, 6, 7);
+  if (s2Alpha > 0) {
+    const s2t = clamp01((t - 3) / 3);
+
+    // Morphing expanding ring
+    const ringR = lerp(60, 200, expoOut(s2t));
+    const ringW = lerp(3, 2, s2t);
+
+    ctx.save();
+    ctx.globalAlpha = s2Alpha * 0.3;
+    for (let i = 0; i < 4; i++) {
+      const a = (i / 4) * Math.PI * 2 + t * 0.5;
+      const ci = COLORS[i];
+      ctx.strokeStyle = ci;
+      ctx.lineWidth = ringW;
+      ctx.beginPath();
+      ctx.arc(CX, CY, ringR, a, a + Math.PI * 0.5);
+      ctx.stroke();
+    }
+    ctx.restore();
+
+    // "Gemini" text — morph/expand animation
+    if (t >= 3.5) {
+      const textT = clamp01((t - 3.5) / 1.5);
+      const textScale = overshoot(textT);
+
+      ctx.save();
+      ctx.globalAlpha = s2Alpha * clamp01(textT * 2);
+      ctx.translate(CX, CY);
+      ctx.scale(textScale, textScale);
+
+      // Gradient text
+      const tg = ctx.createLinearGradient(-120, -20, 120, 20);
+      tg.addColorStop(0, BLUE);
+      tg.addColorStop(0.33, RED);
+      tg.addColorStop(0.66, YELLOW);
+      tg.addColorStop(1, GREEN);
+
+      ctx.fillStyle = tg;
+      ctx.font = '600 72px "Google Sans", "Segoe UI", -apple-system, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('Gemini', 0, 0);
+      ctx.restore();
+
+      // Sparkle ✦ materializes
+      if (t >= 4.2) {
+        const spT = clamp01((t - 4.2) / 1);
+        const spScale = overshoot(spT);
+        const sparkX = CX + 140;
+        const sparkY = CY - 50;
+
+        ctx.save();
+        ctx.globalAlpha = s2Alpha * clamp01(spT * 2);
+        ctx.translate(sparkX, sparkY);
+        ctx.scale(spScale, spScale);
+        drawSparkleIcon(ctx, 0, 0, 18, WHITE, 1);
+        // Glow behind sparkle
+        const sg = ctx.createRadialGradient(0, 0, 0, 0, 0, 30);
+        sg.addColorStop(0, `rgba(255,255,255,0.3)`);
+        sg.addColorStop(1, 'transparent');
+        ctx.fillStyle = sg;
+        ctx.fillRect(-30, -30, 60, 60);
+        ctx.restore();
+      }
+    }
+  }
+
+  // ══════════════════════════════════════════════════
+  // S3: PROCESS (6-14s) — Fast
+  // Fade in: 6-6.5s, Hold: 6.5-13s, Fade out: 13-14s
+  // ══════════════════════════════════════════════════
+  const s3Alpha = phaseAlpha(t, 6, 6, 6.5, 13, 14);
+  if (s3Alpha > 0) {
+    // ── Card 1: Chat Interface ──
+    const card1T = clamp01((t - 6.2) / 0.8);
+    const card1X = lerp(-400, CX - 480, expoOut(card1T));
+    const card1Y = CY - 180;
+
+    if (card1T > 0) {
+      ctx.save();
+      ctx.globalAlpha = s3Alpha * clamp01(card1T * 2);
+
+      // Card background
+      drawRoundedRect(ctx, card1X, card1Y, 380, 200, 12);
+      ctx.fillStyle = 'rgba(255,255,255,0.04)';
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(66,133,244,0.2)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      // Header
+      ctx.fillStyle = BLUE;
+      ctx.globalAlpha = s3Alpha * 0.7;
+      ctx.font = '500 13px "Google Sans", "Segoe UI", -apple-system, sans-serif';
+      ctx.fillText('✦ Chat', card1X + 16, card1Y + 28);
+
+      // Chat messages
+      const msgStartT = 6.5;
+      chatMessages.forEach((msg, i) => {
+        const msgT = clamp01((t - msgStartT - i * 1.2) / 0.6);
+        if (msgT <= 0) return;
+
+        const my = card1Y + 52 + i * 72;
+        const mx = msg.isUser ? card1X + 60 : card1X + 16;
+        const mw = msg.isUser ? 280 : 340;
+
+        ctx.globalAlpha = s3Alpha * expoOut(msgT);
+
+        // Message bubble
+        drawRoundedRect(ctx, mx, my, mw, 52, 8);
+        ctx.fillStyle = msg.isUser ? 'rgba(66,133,244,0.15)' : 'rgba(255,255,255,0.06)';
+        ctx.fill();
+
+        // Text — chunk reveal
+        ctx.font = '13px "Google Sans", "Segoe UI", -apple-system, sans-serif';
+        ctx.fillStyle = msg.isUser ? '#8AB4F8' : 'rgba(255,255,255,0.85)';
+        const words = msg.text.split(' ');
+        const visibleWords = Math.floor(words.length * clamp01(msgT * 1.5));
+        const displayText = words.slice(0, visibleWords).join(' ');
+
+        // Word wrap
+        const lines = [];
+        let line = '';
+        displayText.split(' ').forEach(w => {
+          const test = line + (line ? ' ' : '') + w;
+          if (ctx.measureText(test).width > mw - 20) {
+            lines.push(line);
+            line = w;
+          } else {
+            line = test;
+          }
+        });
+        if (line) lines.push(line);
+        lines.slice(0, 3).forEach((l, li) => {
+          ctx.fillText(l, mx + 10, my + 18 + li * 16);
+        });
+      });
+
+      ctx.restore();
+    }
+
+    // ── Card 2: Code Writing ──
+    const card2T = clamp01((t - 7.0) / 0.8);
+    const card2X = lerp(W + 100, CX + 100, expoOut(card2T));
+    const card2Y = CY - 180;
+
+    if (card2T > 0) {
+      ctx.save();
+      ctx.globalAlpha = s3Alpha * clamp01(card2T * 2);
+
+      drawRoundedRect(ctx, card2X, card2Y, 380, 200, 12);
+      ctx.fillStyle = 'rgba(255,255,255,0.04)';
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(52,168,83,0.2)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      ctx.fillStyle = GREEN;
+      ctx.globalAlpha = s3Alpha * 0.7;
+      ctx.font = '500 13px "Google Sans", "Segoe UI", -apple-system, sans-serif';
+      ctx.fillText('✦ Code Analysis', card2X + 16, card2Y + 28);
+
+      // Code lines appearing
+      const codeStartT = 7.3;
+      codeLines.forEach((line, i) => {
+        const lineT = clamp01((t - codeStartT - i * 0.15) / 0.4);
+        if (lineT <= 0) return;
+
+        ctx.globalAlpha = s3Alpha * expoOut(lineT);
+        ctx.font = '12px "SF Mono", "Cascadia Code", "Consolas", monospace';
+
+        // Syntax coloring
+        let col = 'rgba(255,255,255,0.8)';
+        if (line.includes('def ') || line.includes('return') || line.includes('for ') || line.includes('if ')) col = RED;
+        else if (line.includes('#')) col = 'rgba(255,255,255,0.4)';
+        else if (line.includes('"') || line.includes("'")) col = YELLOW;
+        else if (line.includes('print') || line.includes('range')) col = BLUE;
+
+        ctx.fillStyle = col;
+        ctx.fillText(line, card2X + 16, card2Y + 50 + i * 15);
+      });
+
+      ctx.restore();
+    }
+
+    // ── Card 3: Image Understanding ──
+    const card3T = clamp01((t - 7.8) / 0.8);
+    const card3X = lerp(-400, CX - 480, expoOut(card3T));
+    const card3Y = CY + 50;
+
+    if (card3T > 0) {
+      ctx.save();
+      ctx.globalAlpha = s3Alpha * clamp01(card3T * 2);
+
+      drawRoundedRect(ctx, card3X, card3Y, 380, 180, 12);
+      ctx.fillStyle = 'rgba(255,255,255,0.04)';
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(234,67,53,0.2)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      ctx.fillStyle = RED;
+      ctx.globalAlpha = s3Alpha * 0.7;
+      ctx.font = '500 13px "Google Sans", "Segoe UI", -apple-system, sans-serif';
+      ctx.fillText('✦ Image Understanding', card3X + 16, card3Y + 28);
+
+      // Animated image placeholder with gradient
+      const imgT = clamp01((t - 8.2) / 1.5);
+      if (imgT > 0) {
+        const imgX = card3X + 16;
+        const imgY = card3Y + 44;
+        const imgW = 348;
+        const imgH = 120;
+
+        drawRoundedRect(ctx, imgX, imgY, imgW, imgH, 8);
+        const imgGrad = ctx.createLinearGradient(imgX, imgY, imgX + imgW * imgT, imgY + imgH);
+        imgGrad.addColorStop(0, 'rgba(66,133,244,0.15)');
+        imgGrad.addColorStop(0.5, 'rgba(234,67,53,0.1)');
+        imgGrad.addColorStop(1, 'rgba(52,168,83,0.1)');
+        ctx.fillStyle = imgGrad;
+        ctx.fill();
+
+        // Scanning line effect
+        const scanX = imgX + (imgW * ((t * 0.5) % 1));
+        ctx.strokeStyle = `rgba(251,187,5,${0.5 * imgT})`;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(scanX, imgY);
+        ctx.lineTo(scanX, imgY + imgH);
+        ctx.stroke();
+
+        // Labels appearing
+        ctx.globalAlpha = s3Alpha * clamp01((imgT - 0.3) * 2);
+        ctx.font = '11px "Google Sans", "Segoe UI", -apple-system, sans-serif';
+        ctx.fillStyle = YELLOW;
+        ctx.fillText('Object: Mountain landscape  96%', imgX + 10, imgY + 30);
+        ctx.fillStyle = GREEN;
+        ctx.fillText('Sentiment: Serene, natural  91%', imgX + 10, imgY + 50);
+        ctx.fillStyle = BLUE;
+        ctx.fillText('Style: Photography, golden hour  88%', imgX + 10, imgY + 70);
+      }
+
+      ctx.restore();
+    }
+
+    // ── Card 4: Data Visualization ──
+    const card4T = clamp01((t - 8.5) / 0.8);
+    const card4X = lerp(W + 100, CX + 100, expoOut(card4T));
+    const card4Y = CY + 50;
+
+    if (card4T > 0) {
+      ctx.save();
+      ctx.globalAlpha = s3Alpha * clamp01(card4T * 2);
+
+      drawRoundedRect(ctx, card4X, card4Y, 380, 180, 12);
+      ctx.fillStyle = 'rgba(255,255,255,0.04)';
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(251,187,5,0.2)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      ctx.fillStyle = YELLOW;
+      ctx.globalAlpha = s3Alpha * 0.7;
+      ctx.font = '500 13px "Google Sans", "Segoe UI", -apple-system, sans-serif';
+      ctx.fillText('✦ Data Insights', card4X + 16, card4Y + 28);
+
+      // Animated bar chart
+      const barStartT = 9.0;
+      const bars = [0.6, 0.8, 0.5, 0.9, 0.7, 1.0, 0.85, 0.65, 0.95, 0.75];
+      const barColors = [BLUE, RED, YELLOW, GREEN, BLUE, RED, YELLOW, GREEN, BLUE, RED];
+
+      bars.forEach((val, i) => {
+        const barT = clamp01((t - barStartT - i * 0.08) / 0.5);
+        if (barT <= 0) return;
+
+        const bx = card4X + 20 + i * 35;
+        const bh = 100 * val * expoOut(barT);
+        const by = card4Y + 150 - bh;
+
+        ctx.globalAlpha = s3Alpha * 0.8;
+        drawRoundedRect(ctx, bx, by, 24, bh, 4);
+        ctx.fillStyle = barColors[i];
+        ctx.fill();
+      });
+
+      // Line chart overlay
+      const lineT = clamp01((t - 9.5) / 1);
+      if (lineT > 0) {
+        ctx.globalAlpha = s3Alpha * 0.6;
+        ctx.strokeStyle = 'rgba(255,255,255,0.6)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        const points = Math.floor(dataPoints[0].length * lineT);
+        for (let i = 0; i < points; i++) {
+          const px = card4X + 20 + (i / 9) * 340;
+          const py = card4Y + 150 - dataPoints[0][i] * 110;
+          if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+        }
+        ctx.stroke();
+
+        // Dots
+        for (let i = 0; i < points; i++) {
+          const px = card4X + 20 + (i / 9) * 340;
+          const py = card4Y + 150 - dataPoints[0][i] * 110;
+          ctx.fillStyle = '#fff';
+          ctx.beginPath();
+          ctx.arc(px, py, 3, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
+      ctx.restore();
+    }
+
+    // ── Gradient connection lines between cards ──
+    if (t > 8 && t < 13) {
+      const connT = clamp01((t - 8) / 2);
+      ctx.save();
+      ctx.globalAlpha = s3Alpha * 0.15 * connT;
+
+      // Horizontal connections
+      ctx.strokeStyle = BLUE;
+      ctx.lineWidth = 1;
+      ctx.setLineDash([4, 8]);
+      ctx.beginPath();
+      ctx.moveTo(CX - 100, CY - 80);
+      ctx.lineTo(CX + 100, CY - 80);
+      ctx.stroke();
+
+      ctx.strokeStyle = YELLOW;
+      ctx.beginPath();
+      ctx.moveTo(CX - 100, CY + 140);
+      ctx.lineTo(CX + 100, CY + 140);
+      ctx.stroke();
+
+      // Vertical
+      ctx.strokeStyle = GREEN;
+      ctx.beginPath();
+      ctx.moveTo(CX - 290, CY - 10);
+      ctx.lineTo(CX - 290, CY + 50);
+      ctx.stroke();
+
+      ctx.strokeStyle = RED;
+      ctx.beginPath();
+      ctx.moveTo(CX + 290, CY - 10);
+      ctx.lineTo(CX + 290, CY + 50);
+      ctx.stroke();
+
+      ctx.setLineDash([]);
+      ctx.restore();
+    }
+  }
+
+  // ══════════════════════════════════════════════════
+  // S4: BOOM (14-16.5s) — Boom
+  // Fade in: 14-14.3s, Hold: 14.3-15.8s, Fade out: 15.8-16.5s
+  // ══════════════════════════════════════════════════
+  const s4Alpha = phaseAlpha(t, 14, 14, 14.3, 15.8, 16.5);
+  if (s4Alpha > 0) {
+    // Convergence phase (14-15)
+    if (t < 15) {
+      const convT = clamp01((t - 14) / 1);
+
+      // All elements shrink to center
+      ctx.save();
+      const convScale = 1 - expoIn(convT) * 0.98;
+      ctx.globalAlpha = s4Alpha * (1 - convT * 0.5);
+      ctx.translate(CX, CY);
+      ctx.scale(convScale, convScale);
+      ctx.translate(-CX, -CY);
+
+      // Re-draw cards at reduced scale (simplified)
+      drawGlowCircle(ctx, CX, CY, 30 + (1 - convT) * 100, BLUE, 80);
+      ctx.restore();
+
+      // Energy convergence particles — short life so they die before S5
+      if (convT > 0.3 && t < 14.5) {
+        for (let i = 0; i < 8; i++) {
+          const angle = (i / 8) * Math.PI * 2 + t * 2;
+          const dist = (1 - convT) * 300;
+          spawnParticles(
+            CX + Math.cos(angle) * dist,
+            CY + Math.sin(angle) * dist,
+            COLORS[i % 4], 60, 1.5, 0.8
+          );
+        }
+      }
+    }
+
+    // Explosion (15-17)
+    const boomT = clamp01((t - 15) / 0.3);
+    if (boomT > 0) {
+      // Explosion ring — fade faster so it's gone before S5
+      const ringR = expoOut(clamp01((t - 15) / 1.5)) * 800;
+      const ringAlpha = s4Alpha * (1 - clamp01((t - 15.1) / 0.6));
+
+      for (let i = 0; i < 4; i++) {
+        const startAngle = (i / 4) * Math.PI * 2;
+        const endAngle = startAngle + Math.PI * 0.5;
+        ctx.save();
+        ctx.globalAlpha = ringAlpha * 0.6;
+        ctx.strokeStyle = COLORS[i];
+        ctx.lineWidth = lerp(8, 1, clamp01((t - 15) / 1.5));
+        ctx.beginPath();
+        ctx.arc(CX, CY, ringR, startAngle, endAngle);
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      // Explosion particles — stop before "Gemini 3.5" text appears at 15.3
+      if (t < 15.0) {
+        for (let i = 0; i < 12; i++) {
+          const angle = Math.random() * Math.PI * 2;
+          const speed = 100 + Math.random() * 200;
+          const pLife = 0.2 + Math.random() * 0.4;
+          particles.push(new Particle(CX, CY, COLORS[Math.floor(Math.random() * 4)], speed, pLife, 2 + Math.random() * 3));
+        }
+      }
+
+      // Central glow pulse — saturated blue, fade fast
+      const glowR = lerp(10, 120, expoOut(clamp01((t - 15) / 0.5)));
+      const glowAlpha = s4Alpha * clamp01(1 - (t - 15.1) / 0.5);
+      if (glowAlpha > 0.01) {
+        ctx.save();
+        ctx.globalAlpha = glowAlpha * 0.8;
+        const pulseGrad = ctx.createRadialGradient(CX, CY, 0, CX, CY, glowR);
+        pulseGrad.addColorStop(0, '#1a6aff');
+        pulseGrad.addColorStop(0.4, 'rgba(66,133,244,0.5)');
+        pulseGrad.addColorStop(1, 'transparent');
+        ctx.fillStyle = pulseGrad;
+        ctx.beginPath();
+        ctx.arc(CX, CY, glowR, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+
+      // "Gemini 3.5" text with overshoot
+      if (t >= 15.3) {
+        const textT = clamp01((t - 15.3) / 0.8);
+        const textScale = overshoot(textT);
+
+        ctx.save();
+        ctx.globalAlpha = s4Alpha * clamp01(textT * 2);
+        ctx.translate(CX, CY - 20);
+        ctx.scale(textScale, textScale);
+
+        // Gradient text
+        const tg = ctx.createLinearGradient(-200, -30, 200, 30);
+        tg.addColorStop(0, BLUE);
+        tg.addColorStop(0.33, RED);
+        tg.addColorStop(0.66, YELLOW);
+        tg.addColorStop(1, GREEN);
+
+        ctx.fillStyle = tg;
+        ctx.font = '700 96px "Google Sans", "Segoe UI", -apple-system, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('Gemini 3.5', 0, 0);
+        ctx.restore();
+
+        // Text glow — subtle, colored, tight radius
+        ctx.save();
+        ctx.globalAlpha = s4Alpha * 0.1 * clamp01(textT);
+        const tgGlow = ctx.createRadialGradient(CX, CY - 20, 0, CX, CY - 20, 200);
+        tgGlow.addColorStop(0, '#1a6aff');
+        tgGlow.addColorStop(0.4, 'rgba(66,133,244,0.2)');
+        tgGlow.addColorStop(1, 'transparent');
+        ctx.fillStyle = tgGlow;
+        ctx.fillRect(0, 0, W, H);
+        ctx.restore();
+      }
+
+      // Subtitle
+      if (t >= 15.8) {
+        const subT = clamp01((t - 15.8) / 0.6);
+        ctx.save();
+        ctx.globalAlpha = s4Alpha * expoOut(subT);
+        ctx.fillStyle = 'rgba(255,255,255,0.7)';
+        ctx.font = '300 28px "Google Sans", "Segoe UI", -apple-system, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('Intelligence for everyone', CX, CY + 50);
+        ctx.restore();
+      }
+    }
+  }
+
+  // ══════════════════════════════════════════════════
+  // S5: LANDING (17-20s) — Stop
+  // Fade in: 17-17.5s, Hold: 17.5-20s
+  // ══════════════════════════════════════════════════
+  const s5Alpha = phaseAlpha(t, 17, 17, 17.5, 20, 25);
+  if (s5Alpha > 0) {
+    // Force-clear all remaining particles from S4
+    if (particles.length > 0) particles = [];
+
+    // Gradient glow beneath
+    const glowGrad = ctx.createRadialGradient(CX, CY + 60, 0, CX, CY + 60, 350);
+    glowGrad.addColorStop(0, 'rgba(66,133,244,0.12)');
+    glowGrad.addColorStop(0.4, 'rgba(234,67,53,0.06)');
+    glowGrad.addColorStop(0.7, 'rgba(251,187,5,0.04)');
+    glowGrad.addColorStop(1, 'transparent');
+    ctx.fillStyle = glowGrad;
+    ctx.fillRect(0, 0, W, H);
+
+    // Clean Gemini logo
+    if (t >= 17.2) {
+      const logoT = clamp01((t - 17.2) / 0.6);
+      const logoScale = spring(logoT);
+
+      ctx.save();
+      ctx.globalAlpha = s5Alpha * clamp01(logoT * 2);
+      ctx.translate(CX, CY - 40);
+      ctx.scale(logoScale, logoScale);
+
+      // Sparkle logo icon — Gemini astroid with Google gradient
+      drawSparkleIcon(ctx, 0, 0, 40, WHITE, 1);
+
+      // Glow behind
+      const logoGlow = ctx.createRadialGradient(0, 0, 0, 0, 0, 80);
+      logoGlow.addColorStop(0, 'rgba(255,255,255,0.15)');
+      logoGlow.addColorStop(1, 'transparent');
+      ctx.fillStyle = logoGlow;
+      ctx.fillRect(-80, -80, 160, 160);
+
+      ctx.restore();
+
+      // Wordmark
+      if (t >= 17.5) {
+        const wmT = clamp01((t - 17.5) / 0.5);
+        ctx.save();
+        ctx.globalAlpha = s5Alpha * expoOut(wmT);
+
+        const wg = ctx.createLinearGradient(CX - 140, 0, CX + 140, 0);
+        wg.addColorStop(0, BLUE);
+        wg.addColorStop(0.33, RED);
+        wg.addColorStop(0.66, YELLOW);
+        wg.addColorStop(1, GREEN);
+
+        ctx.fillStyle = wg;
+        ctx.font = '600 52px "Google Sans", "Segoe UI", -apple-system, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('Gemini', CX, CY + 40);
+        ctx.restore();
+      }
+
+      // Tagline
+      if (t >= 17.8) {
+        const tagT = clamp01((t - 17.8) / 0.5);
+        ctx.save();
+        ctx.globalAlpha = s5Alpha * expoOut(tagT);
+        ctx.fillStyle = 'rgba(255,255,255,0.5)';
+        ctx.font = '300 20px "Google Sans", "Segoe UI", -apple-system, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('Intelligence for everyone', CX, CY + 80);
+        ctx.restore();
+      }
+
+      // Four colored dots beneath
+      if (t >= 18.0) {
+        const dotsT = clamp01((t - 18.0) / 0.4);
+        COLORS.forEach((c, i) => {
+          const dotT = clamp01((dotsT - i * 0.08) * 3);
+          if (dotT <= 0) return;
+          const dotScale = overshoot(dotT);
+          const dx = CX - 30 + i * 20;
+          const dy = CY + 110;
+          ctx.save();
+          ctx.globalAlpha = s5Alpha * dotT;
+          ctx.translate(dx, dy);
+          ctx.scale(dotScale, dotScale);
+          ctx.fillStyle = c;
+          ctx.beginPath();
+          ctx.arc(0, 0, 5, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+        });
+      }
+    }
+  }
+
+  // ─── Draw & Update Particles ───
+  ctx.globalAlpha = 1;
+  particles = particles.filter(p => !p.dead);
+  particles.forEach(p => { p.update(1/60); p.draw(ctx); });
+  ctx.globalAlpha = 1;
+}
+
+// ─── Starter Tick Template (exact spec) ───
+function tick(now) {
+  if (lastTick === null) {
+    lastTick = now;
+    window.__ready = true;
+  }
+  const dt = (now - lastTick) / 1000;
+  lastTick = now;
+
+  if (!window.__recording) {
+    animTime += dt;
+  }
+
+  if (animTime >= DURATION) {
+    animTime = DURATION;
+    render(animTime);
+    if (!window.__recording) return;
+  }
+
+  render(animTime);
+  requestAnimationFrame(tick);
+}
+
+// ─── Seek Interface ───
+window.__seek = function(t) {
+  animTime = Math.max(0, Math.min(DURATION, t));
+  render(animTime);
+};
+
+// ─── Start ───
+document.fonts.ready.then(() => {
+  requestAnimationFrame(tick);
+});
+</script>
+</body>
+</html>
