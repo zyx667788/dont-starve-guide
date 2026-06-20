@@ -1630,13 +1630,113 @@
                 openArticle('anthropic-fable5');
             });
             
-            // News card clicks
+            // News card clicks — extract content from card DOM
             document.querySelectorAll('.news-card').forEach(card => {
+                card.style.cursor = 'pointer';
                 card.addEventListener('click', function() {
-                    const title = this.querySelector('.news-card-title').textContent;
-                    if (title.includes('阿里')) openArticle('ali-agent');
-                    else if (title.includes('字节')) openArticle('byte-chip');
-                    else openArticle('anthropic-fable5');
+                    const title = this.querySelector('.news-card-title')?.textContent || '';
+                    const excerpt = this.querySelector('.news-card-excerpt')?.textContent || '';
+                    const badge = this.querySelector('.topic-badge')?.textContent || '';
+                    const source = this.querySelector('.news-meta .source')?.textContent || '';
+                    const dateEl = this.querySelector('.news-meta span:last-child');
+                    const date = dateEl ? dateEl.textContent : '';
+                    const tags = Array.from(this.querySelectorAll('.news-tags .tag')).map(t => t.textContent);
+                    const thumb = this.querySelector('.news-card-thumb');
+                    const imgStyle = thumb ? getComputedStyle(thumb).backgroundImage : '';
+                    const imgUrl = imgStyle && imgStyle !== 'none' ? imgStyle.replace(/^url\(["']?|["']?\)$/g, '') : '';
+
+                    modalImg.style.background = imgUrl ? "url('" + imgUrl + "') center/cover" : 'linear-gradient(135deg, #1a1a2e, var(--brand))';
+                    modalTag.textContent = badge || (tags[0] || '');
+                    modalTitle.textContent = title;
+                    modalSource.textContent = source;
+                    modalDate.textContent = date;
+                    modalReads.textContent = '';
+                    const tagHtml = tags.map(t => '<span style="display:inline-block;padding:2px 10px;border-radius:12px;font-size:12px;background:rgba(212,98,42,.1);color:#d4622a;margin-right:6px;margin-bottom:4px">' + t + '</span>').join('');
+                    modalContent.innerHTML = '<p>' + excerpt + '</p>' + (tagHtml ? '<div style="margin-top:16px">' + tagHtml + '</div>' : '');
+                    modal.classList.add('open');
+                    document.body.style.overflow = 'hidden';
+                });
+            });
+
+            // Deep card clicks
+            document.querySelectorAll('.deep-card').forEach(card => {
+                card.style.cursor = 'pointer';
+                card.addEventListener('click', function() {
+                    const title = this.querySelector('.deep-card-title')?.textContent || '';
+                    const excerpt = this.querySelector('.deep-card-excerpt')?.textContent || '';
+                    const tag = this.querySelector('.deep-card-tag')?.textContent || '';
+                    const meta = this.querySelector('.deep-card-meta');
+                    const author = meta?.querySelector('.author')?.textContent || '';
+                    const dateEl = meta?.querySelectorAll('span');
+                    const date = dateEl?.[1]?.textContent || '';
+
+                    modalImg.style.background = 'linear-gradient(135deg, #1a1a2e, #2a1a3e)';
+                    modalTag.textContent = tag;
+                    modalTitle.textContent = title;
+                    modalSource.textContent = author;
+                    modalDate.textContent = date;
+                    modalReads.textContent = dateEl?.[2]?.textContent || '';
+                    modalContent.innerHTML = '<p>' + excerpt + '</p>';
+                    modal.classList.add('open');
+                    document.body.style.overflow = 'hidden';
+                });
+            });
+
+            // Product card clicks
+            document.querySelectorAll('.product-card').forEach(card => {
+                card.style.cursor = 'pointer';
+                card.addEventListener('click', function() {
+                    const name = this.querySelector('.product-name')?.textContent || '';
+                    const company = this.querySelector('.product-company')?.textContent || '';
+                    const desc = this.querySelector('.product-desc')?.textContent || '';
+                    const badge = this.querySelector('.product-card-badge')?.textContent || '';
+                    const icon = this.querySelector('.product-icon')?.textContent || '';
+                    const stats = this.querySelector('.product-stats')?.textContent || '';
+
+                    modalImg.style.background = 'linear-gradient(135deg, #0a1a2a, #1a2a3a)';
+                    modalTag.textContent = badge;
+                    modalTitle.textContent = icon + ' ' + name;
+                    modalSource.textContent = company;
+                    modalDate.textContent = '';
+                    modalReads.textContent = '';
+                    modalContent.innerHTML = '<p>' + desc + '</p><div style="margin-top:12px;font-size:13px;color:#999">' + stats + '</div>';
+                    modal.classList.add('open');
+                    document.body.style.overflow = 'hidden';
+                });
+            });
+
+            // Research card clicks
+            document.querySelectorAll('.research-card').forEach(card => {
+                card.style.cursor = 'pointer';
+                card.addEventListener('click', function() {
+                    const title = this.querySelector('.research-title')?.textContent || '';
+                    const abstract = this.querySelector('.research-abstract')?.textContent || '';
+                    const tag = this.querySelector('.research-tag')?.textContent || '';
+                    const venue = this.querySelector('.research-meta .venue')?.textContent || '';
+                    const metaSpans = this.querySelectorAll('.research-meta span');
+                    const date = metaSpans?.[1]?.textContent || '';
+                    const cites = metaSpans?.[2]?.textContent || '';
+
+                    modalImg.style.background = 'linear-gradient(135deg, #0a2a1a, #1a3a2a)';
+                    modalTag.textContent = tag;
+                    modalTitle.textContent = title;
+                    modalSource.textContent = venue;
+                    modalDate.textContent = date;
+                    modalReads.textContent = cites;
+                    modalContent.innerHTML = '<p>' + abstract + '</p>';
+                    modal.classList.add('open');
+                    document.body.style.overflow = 'hidden';
+                });
+            });
+
+            // OSS card clicks — open GitHub link
+            document.querySelectorAll('.oss-card').forEach(card => {
+                card.style.cursor = 'pointer';
+                card.addEventListener('click', function(e) {
+                    // Don't interfere with the GitHub link button click
+                    if (e.target.closest('.oss-github-link')) return;
+                    const link = this.querySelector('.oss-github-link');
+                    if (link) link.click();
                 });
             });
             
